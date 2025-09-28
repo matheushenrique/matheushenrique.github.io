@@ -30,10 +30,13 @@ class ProjetoUsinaSolar {
         
         // Financiamento do terreno (opcional)
         this.financiarTerreno = document.getElementById('financiarTerreno').checked;
-        this.valorTerreno = parseFloat(document.getElementById('valorTerreno').value);
-        this.mesesCarenciaTerreno = parseInt(document.getElementById('carenciaTerreno').value);
+        
+        // Calcular valor do terreno automaticamente
         this.parcelasTerreno = parseInt(document.getElementById('numeroParcelasTerreno').value);
         this.valorParcelaTerreno = parseFloat(document.getElementById('valorParcelaTerreno').value);
+        this.valorTerreno = this.parcelasTerreno * this.valorParcelaTerreno;
+        
+        this.mesesCarenciaTerreno = parseInt(document.getElementById('carenciaTerreno').value);
         this.mesInicioParcelasTerreno = this.mesesCarenciaTerreno + 1;
         this.mesFimParcelasTerreno = this.mesesCarenciaTerreno + this.parcelasTerreno;
         
@@ -58,6 +61,9 @@ class ProjetoUsinaSolar {
         this.totalInvestimento = this.calcularTotalInvestimento();
         this.totalCustosMensaisBase = this.calcularTotalCustosMensaisBase();
         this.investimentoTotal = this.calcularInvestimentoTotal();
+        
+        // Atualizar o campo de valor do terreno calculado
+        this.atualizarValorTerrenoCalculado();
     }
     
     calcularTotalInvestimento() {
@@ -74,11 +80,22 @@ class ProjetoUsinaSolar {
     calcularInvestimentoTotal() {
         // Investimento total = Valor do sistema + Valor do terreno + Custos iniciais
         let total = this.valorSistema + this.valorTerreno + Object.values(this.investimentoInicial).reduce((sum, val) => sum + val, 0);
+        console.log(this.valorSistema, this.valorTerreno, this.investimentoInicial, total); 
         return total;
     }
     
     calcularTotalCustosMensaisBase() {
         return Object.values(this.custosMensaisBase).reduce((sum, val) => sum + val, 0);
+    }
+    
+    atualizarValorTerrenoCalculado() {
+        const valorTerrenoElement = document.getElementById('valorTerrenoCalculado');
+        valorTerrenoElement.textContent = this.formatarMoeda(this.valorTerreno);
+    }
+    
+    atualizarInvestimentoTotal() {
+        const investimentoTotalElement = document.getElementById('investimentoTotal');
+        investimentoTotalElement.textContent = this.formatarMoeda(this.investimentoTotal);
     }
     
     calcularProjecaoMensal() {
@@ -99,45 +116,41 @@ class ProjetoUsinaSolar {
             // Receita bruta mensal
             const receitaBrutaMensal = this.producaoMensalKwh * tarifa;
             
-            // Custo operacional mensal
+            // Custos operacionais (percentual da receita)
             const custoOperacionalMensal = receitaBrutaMensal * this.custoOperacionalPercentual;
-            
-            // Verifica status do financiamento do sistema
-            const periodoCarenciaSistema = mes <= this.mesesCarenciaSistema;
-            const financiamentoAtivoSistema = mes >= this.mesInicioParcelasSistema && mes <= this.mesFimParcelasSistema;
-            
-            // Parcela do sistema
-            const parcelaSistemaMensal = financiamentoAtivoSistema ? this.valorParcelaSistema : 0;
-            
-            // Verifica status do financiamento do terreno (se aplicável)
-            let financiamentoAtivoTerreno = false;
-            let parcelaTerrenoMensal = 0;
-            
-            if (this.financiarTerreno) {
-                financiamentoAtivoTerreno = mes >= this.mesInicioParcelasTerreno && mes <= this.mesFimParcelasTerreno;
-                parcelaTerrenoMensal = financiamentoAtivoTerreno ? this.valorParcelaTerreno : 0;
-            }
             
             // Custos fixos mensais
             const custosFixosMensais = this.totalCustosMensaisBase;
             
-            // Total de parcelas
-            const totalParcelasMensal = parcelaSistemaMensal + parcelaTerrenoMensal;
+            // Parcela do sistema
+            let parcelaSistema = 0;
+            if (mes >= this.mesInicioParcelasSistema && mes <= this.mesFimParcelasSistema) {
+                parcelaSistema = this.valorParcelaSistema;
+            }
             
-            // Rendimento bruto mensal
-            const rendimentoBrutoMensal = receitaBrutaMensal - custoOperacionalMensal - custosFixosMensais - totalParcelasMensal;
+            // Parcela do terreno (se financiado)
+            let parcelaTerreno = 0;
+            if (this.financiarTerreno && mes >= this.mesInicioParcelasTerreno && mes <= this.mesFimParcelasTerreno) {
+                parcelaTerreno = this.valorParcelaTerreno;
+            }
             
-            // Imposto mensal (apenas se houver lucro)
-            const impostoMensal = rendimentoBrutoMensal > 0 ? rendimentoBrutoMensal * this.impostoPercentual : 0;
+            // Rendimento bruto
+            const rendimentoBruto = receitaBrutaMensal - custoOperacionalMensal - custosFixosMensais - parcelaSistema - parcelaTerreno;
             
-            // Lucro líquido mensal
-            const lucroLiquidoMensal = rendimentoBrutoMensal - impostoMensal;
+            // Imposto (sobre o rendimento bruto, se positivo)
+            let imposto = 0;
+            if (rendimentoBruto > 0) {
+                imposto = rendimentoBruto * this.impostoPercentual;
+            }
             
-            // Porcentagem sobre o investimento total
-            const porcentagemInvestimento = (lucroLiquidoMensal / this.investimentoTotal) * 100;
+            // Lucro líquido
+            const lucroLiquido = rendimentoBruto - imposto;
             
-            // Fluxo de caixa acumulado
-            fluxoAcumulado += lucroLiquidoMensal;
+            // Porcentagem sobre investimento
+            const porcentagemInvestimento = this.investimentoTotal > 0 ? (lucroLiquido / this.investimentoTotal) * 100 : 0;
+            
+            // Fluxo acumulado
+            fluxoAcumulado += lucroLiquido;
             
             // Verifica payback
             if (!paybackAlcancado && fluxoAcumulado >= 0) {
@@ -145,14 +158,21 @@ class ProjetoUsinaSolar {
                 mesPayback = mes;
             }
             
-            // Determina status
-            let status = 'livre';
-            if (periodoCarenciaSistema) {
-                status = 'carecia';
-            } else if (financiamentoAtivoSistema || financiamentoAtivoTerreno) {
-                status = 'parcela';
-                if (financiamentoAtivoSistema && financiamentoAtivoTerreno) {
-                    status = 'terreno';
+            // Status
+            let status = '';
+            if (mes < this.mesInicioParcelasSistema) {
+                status = '<span class="status-dot status-carecia"></span>Carência';
+            } else if (mes <= this.mesFimParcelasSistema) {
+                status = '<span class="status-dot status-parcela"></span>Parcela';
+            } else {
+                status = '<span class="status-dot status-livre"></span>Livre';
+            }
+            
+            if (this.financiarTerreno) {
+                if (mes < this.mesInicioParcelasTerreno) {
+                    status += ' <span class="status-dot status-carecia"></span>Carência Terreno';
+                } else if (mes <= this.mesFimParcelasTerreno) {
+                    status += ' <span class="status-dot status-terreno"></span>Parcela Terreno';
                 }
             }
             
@@ -160,65 +180,60 @@ class ProjetoUsinaSolar {
                 mes,
                 ano,
                 mesNoAno,
-                tarifa: this.arredondar(tarifa, 4),
-                receitaBrutaMensal: this.arredondar(receitaBrutaMensal, 2),
-                custoOperacionalMensal: this.arredondar(custoOperacionalMensal, 2),
-                custosFixosMensais: this.arredondar(custosFixosMensais, 2),
-                parcelaSistemaMensal: this.arredondar(parcelaSistemaMensal, 2),
-                parcelaTerrenoMensal: this.arredondar(parcelaTerrenoMensal, 2),
-                totalParcelasMensal: this.arredondar(totalParcelasMensal, 2),
-                rendimentoBrutoMensal: this.arredondar(rendimentoBrutoMensal, 2),
-                impostoMensal: this.arredondar(impostoMensal, 2),
-                lucroLiquidoMensal: this.arredondar(lucroLiquidoMensal, 2),
-                porcentagemInvestimento: this.arredondar(porcentagemInvestimento, 3),
-                fluxoAcumulado: this.arredondar(fluxoAcumulado, 2),
-                periodoCarenciaSistema,
-                financiamentoAtivoSistema,
-                financiamentoAtivoTerreno,
+                tarifa,
+                receitaBrutaMensal,
+                custoOperacionalMensal,
+                custosFixosMensais,
+                parcelaSistema,
+                parcelaTerreno,
+                rendimentoBruto,
+                imposto,
+                lucroLiquido,
+                porcentagemInvestimento,
+                fluxoAcumulado,
                 status
             });
         }
         
-        return {
-            dados: this.dadosMensais,
-            paybackMes: paybackAlcancado ? mesPayback : null,
-            totalMeses: this.periodoAnalise
-        };
+        this.atualizarResumo(fluxoAcumulado, mesPayback);
+        return this.dadosMensais;
     }
     
-    calcularIndicadores() {
-        const lucroTotal = this.dadosMensais.reduce((sum, d) => sum + d.lucroLiquidoMensal, 0);
-        const roiPercent = (lucroTotal / this.totalInvestimento) * 100;
+    atualizarResumo(fluxoAcumulado, mesPayback) {
+        const paybackElement = document.getElementById('payback');
+        const roiElement = document.getElementById('roi');
+        const parcelaTerrenoElement = document.getElementById('parcelaTerreno');
+        const lucroTotalElement = document.getElementById('lucroTotal');
+        const investimentoTotalElement = document.getElementById('investimentoTotal');
+        investimentoTotalElement.textContent = this.formatarMoeda(this.investimentoTotal);
         
-        // Lucro durante carência
-        const lucroDuranteCarencia = this.dadosMensais
-            .filter(d => d.periodoCarenciaSistema)
-            .reduce((sum, d) => sum + d.lucroLiquidoMensal, 0);
+        // Formatar valores
+        lucroTotalElement.textContent = this.formatarMoeda(fluxoAcumulado);
         
-        // Lucro após financiamento
-        const ultimoMesFinanciamento = Math.max(this.mesFimParcelasSistema, this.mesFimParcelasTerreno);
-        const lucroPosFinanciamento = this.dadosMensais
-            .filter(d => d.mes > ultimoMesFinanciamento)
-            .reduce((sum, d) => sum + d.lucroLiquidoMensal, 0);
+        // Calcular ROI
+        const roi = ((fluxoAcumulado / this.investimentoTotal) * 100).toFixed(1);
+        roiElement.textContent = `${roi}%`;
         
-        // Porcentagem média mensal sobre investimento
-        const porcentagemMedia = this.dadosMensais.reduce((sum, d) => sum + d.porcentagemInvestimento, 0) / this.dadosMensais.length;
+        // Payback
+        if (mesPayback > 0) {
+            const anosPayback = Math.floor(mesPayback / 12);
+            const mesesPayback = mesPayback % 12;
+            let paybackText = '';
+            if (anosPayback > 0) {
+                paybackText += `${anosPayback} ano${anosPayback > 1 ? 's' : ''}`;
+            }
+            if (mesesPayback > 0) {
+                paybackText += `${paybackText ? ' e ' : ''}${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}`;
+            }
+            paybackElement.textContent = paybackText;
+        } else {
+            paybackElement.textContent = 'Não alcançado';
+        }
         
-        return {
-            investimentoTotal: this.investimentoTotal,
-            financiarTerreno: this.financiarTerreno,
-            valorParcelaTerreno: this.valorParcelaTerreno,
-            roiTotal: this.arredondar(roiPercent, 1),
-            lucroTotal: this.arredondar(lucroTotal, 2),
-            lucroDuranteCarencia: this.arredondar(lucroDuranteCarencia, 2),
-            lucroPosFinanciamento: this.arredondar(lucroPosFinanciamento, 2),
-            porcentagemMedia: this.arredondar(porcentagemMedia, 3)
-        };
-    }
-    
-    arredondar(valor, casasDecimais) {
-        const factor = Math.pow(10, casasDecimais);
-        return Math.round(valor * factor) / factor;
+        // Parcela do terreno
+        if (this.financiarTerreno) {
+            parcelaTerrenoElement.textContent = this.formatarMoeda(this.valorParcelaTerreno);
+        }
     }
     
     formatarMoeda(valor) {
@@ -235,19 +250,234 @@ class ProjetoUsinaSolar {
         }).format(valor);
     }
     
-    formatarPorcentagem(valor, casasDecimais = 3) {
-        return new Intl.NumberFormat('pt-BR', {
-            minimumFractionDigits: casasDecimais,
-            maximumFractionDigits: casasDecimais
-        }).format(valor) + '%';
+    atualizarTabela() {
+        const tabelaBody = document.getElementById('tabelaBody');
+        const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+        const fim = inicio + this.itensPorPagina;
+        const dadosPagina = this.dadosMensais.slice(inicio, fim);
+        
+        tabelaBody.innerHTML = '';
+        
+        dadosPagina.forEach(dado => {
+            const tr = document.createElement('tr');
+            
+            tr.innerHTML = `
+                <td>${dado.mes}</td>
+                <td>${dado.ano}</td>
+                <td>${this.formatarNumero(dado.tarifa, 4)}</td>
+                <td class="positive">${this.formatarMoeda(dado.receitaBrutaMensal)}</td>
+                <td class="negative">${this.formatarMoeda(dado.custoOperacionalMensal)}</td>
+                <td class="negative">${this.formatarMoeda(dado.custosFixosMensais)}</td>
+                <td class="negative">${this.formatarMoeda(dado.parcelaSistema)}</td>
+                ${this.financiarTerreno ? `<td class="negative">${this.formatarMoeda(dado.parcelaTerreno)}</td>` : ''}
+                <td class="${dado.rendimentoBruto >= 0 ? 'positive' : 'negative'}">${this.formatarMoeda(dado.rendimentoBruto)}</td>
+                <td class="negative">${this.formatarMoeda(dado.imposto)}</td>
+                <td class="${dado.lucroLiquido >= 0 ? 'positive' : 'negative'}">${this.formatarMoeda(dado.lucroLiquido)}</td>
+                <td class="percentage">${this.formatarNumero(dado.porcentagemInvestimento, 2)}%</td>
+                <td class="${dado.fluxoAcumulado >= 0 ? 'positive' : 'negative'}">${this.formatarMoeda(dado.fluxoAcumulado)}</td>
+                <td>${dado.status}</td>
+            `;
+            
+            tabelaBody.appendChild(tr);
+        });
+        
+        // Atualizar informações da paginação
+        const totalPaginas = Math.ceil(this.dadosMensais.length / this.itensPorPagina);
+        document.getElementById('infoPagina').textContent = `Página ${this.paginaAtual} de ${totalPaginas}`;
+    }
+    
+    criarGraficos() {
+        const ctxLucroMensal = document.getElementById('graficoLucroMensal').getContext('2d');
+        const ctxPorcentagem = document.getElementById('graficoPorcentagemInvestimento').getContext('2d');
+        const ctxFluxoAcumulado = document.getElementById('graficoFluxoAcumulado').getContext('2d');
+        const ctxComposicao = document.getElementById('graficoComposicao').getContext('2d');
+        
+        // Destruir gráficos existentes
+        Object.values(this.graficos).forEach(grafico => {
+            if (grafico) grafico.destroy();
+        });
+        
+        // Dados para os gráficos
+        const meses = this.dadosMensais.map(d => `Mês ${d.mes}`);
+        const lucrosMensais = this.dadosMensais.map(d => d.lucroLiquido);
+        const porcentagensInvestimento = this.dadosMensais.map(d => d.porcentagemInvestimento);
+        const fluxosAcumulados = this.dadosMensais.map(d => d.fluxoAcumulado);
+        
+        // Gráfico de Lucro Mensal
+        this.graficos.lucroMensal = new Chart(ctxLucroMensal, {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Lucro Líquido Mensal (R$)',
+                    data: lucrosMensais,
+                    borderColor: '#27ae60',
+                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolução do Lucro Mensal'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'R$ ' + value.toLocaleString('pt-BR');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de Porcentagem sobre Investimento
+        this.graficos.porcentagemInvestimento = new Chart(ctxPorcentagem, {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: '% sobre Investimento',
+                    data: porcentagensInvestimento,
+                    backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                    borderColor: '#3498db',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Porcentagem Mensal sobre Investimento'
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de Fluxo de Caixa Acumulado
+        this.graficos.fluxoAcumulado = new Chart(ctxFluxoAcumulado, {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Fluxo de Caixa Acumulado (R$)',
+                    data: fluxosAcumulados,
+                    borderColor: '#e67e22',
+                    backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Fluxo de Caixa Acumulado'
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return 'R$ ' + value.toLocaleString('pt-BR');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de Composição Financeira (último ano)
+        const ultimoAno = this.dadosMensais.slice(-12);
+        const receitas = ultimoAno.reduce((sum, d) => sum + d.receitaBrutaMensal, 0);
+        const custosOperacionais = ultimoAno.reduce((sum, d) => sum + d.custoOperacionalMensal, 0);
+        const custosFixos = ultimoAno.reduce((sum, d) => sum + d.custosFixosMensais, 0);
+        const parcelasSistema = ultimoAno.reduce((sum, d) => sum + d.parcelaSistema, 0);
+        const parcelasTerreno = ultimoAno.reduce((sum, d) => sum + d.parcelaTerreno, 0);
+        const impostos = ultimoAno.reduce((sum, d) => sum + d.imposto, 0);
+        const lucro = ultimoAno.reduce((sum, d) => sum + d.lucroLiquido, 0);
+        
+        this.graficos.composicao = new Chart(ctxComposicao, {
+            type: 'doughnut',
+            data: {
+                labels: ['Receitas', 'Custos Operacionais', 'Custos Fixos', 'Parcelas Sistema', 'Parcelas Terreno', 'Impostos', 'Lucro Líquido'],
+                datasets: [{
+                    data: [receitas, custosOperacionais, custosFixos, parcelasSistema, parcelasTerreno, impostos, lucro],
+                    backgroundColor: [
+                        '#27ae60',
+                        '#e74c3c',
+                        '#e67e22',
+                        '#9b59b6',
+                        '#d35400',
+                        '#f39c12',
+                        '#2ecc71'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Composição Financeira (Último Ano)'
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
     }
 }
 
-// Instância global e variáveis
+// Instância global do projeto
 let projeto = new ProjetoUsinaSolar();
-let dadosProjecao = null;
 
-// Função para mostrar/ocultar campos do terreno
+// Funções globais
+function calcularProjecao() {
+    projeto.carregarConfiguracoes();
+    projeto.calcularProjecaoMensal();
+    projeto.atualizarTabela();
+    projeto.criarGraficos();
+}
+
+function calcularValorTerreno() {
+    // Calcular valor do terreno automaticamente
+    const parcelas = parseInt(document.getElementById('numeroParcelasTerreno').value) || 0;
+    const valorParcela = parseFloat(document.getElementById('valorParcelaTerreno').value) || 0;
+    const valorTerreno = parcelas * valorParcela;
+    
+    // Atualizar o campo de valor do terreno
+    document.getElementById('valorTerrenoCalculado').textContent = projeto.formatarMoeda(valorTerreno);
+    
+    // Recalcular projeção
+    calcularProjecao();
+}
+
 function toggleFinanciamentoTerreno() {
     const checkbox = document.getElementById('financiarTerreno');
     const camposTerreno = document.getElementById('camposTerreno');
@@ -267,410 +497,27 @@ function toggleFinanciamentoTerreno() {
     calcularProjecao();
 }
 
-// Inicialização
-function inicializar() {
-    calcularProjecao();
-    configurarEventos();
-}
-
-function configurarEventos() {
-    // Eventos para inputs numéricos
-    const inputs = document.querySelectorAll('input[type="number"]');
-    inputs.forEach(input => {
-        input.addEventListener('change', function() {
-            if (this.value === '' || this.value < 0) {
-                this.value = 0;
-            }
-            calcularProjecao();
-        });
-        
-        input.addEventListener('input', function() {
-            if (this.value === '' || this.value < 0) {
-                this.value = 0;
-            }
-        });
-    });
-    
-    // Evento para checkbox do terreno
-    document.getElementById('financiarTerreno').addEventListener('change', toggleFinanciamentoTerreno);
-    
-    // Evento para select de itens por página
-    document.getElementById('itensPorPagina').addEventListener('change', function() {
-        projeto.itensPorPagina = parseInt(this.value);
-        projeto.paginaAtual = 1;
-        atualizarTabela();
-    });
-}
-
-function calcularProjecao() {
-    dadosProjecao = projeto.calcularProjecaoMensal();
-    atualizarResumo();
-    atualizarTabela();
-    atualizarGraficos();
-}
-
-function atualizarResumo() {
-    const indicadores = projeto.calcularIndicadores();
-    const paybackAnos = dadosProjecao.paybackMes ? Math.floor(dadosProjecao.paybackMes / 12) : 0;
-    const paybackMeses = dadosProjecao.paybackMes ? dadosProjecao.paybackMes % 12 : 0;
-    
-    document.getElementById('investimentoTotal').textContent = projeto.formatarMoeda(indicadores.investimentoTotal);
-    document.getElementById('payback').textContent = dadosProjecao.paybackMes ? 
-        `${paybackAnos} anos e ${paybackMeses} meses` : 'Não alcançado';
-    document.getElementById('roi').textContent = `${indicadores.roiTotal}%`;
-    document.getElementById('lucroTotal').textContent = projeto.formatarMoeda(indicadores.lucroTotal);
-    
-    if (indicadores.financiarTerreno) {
-        document.getElementById('parcelaTerreno').textContent = projeto.formatarMoeda(indicadores.valorParcelaTerreno);
-    }
-}
-
-function atualizarTabela() {
-    if (!dadosProjecao || !dadosProjecao.dados.length) return;
-    
-    const tbody = document.getElementById('tabelaBody');
-    const inicio = (projeto.paginaAtual - 1) * projeto.itensPorPagina;
-    const fim = inicio + projeto.itensPorPagina;
-    const dadosPagina = dadosProjecao.dados.slice(inicio, fim);
-    
-    tbody.innerHTML = dadosPagina.map(dado => `
-        <tr>
-            <td class="neutral">${dado.mes}</td>
-            <td class="neutral">${dado.ano}</td>
-            <td class="neutral">${projeto.formatarNumero(dado.tarifa, 4)}</td>
-            <td class="positive">${projeto.formatarMoeda(dado.receitaBrutaMensal)}</td>
-            <td class="negative">${projeto.formatarMoeda(dado.custoOperacionalMensal)}</td>
-            <td class="negative">${projeto.formatarMoeda(dado.custosFixosMensais)}</td>
-            <td class="negative">${projeto.formatarMoeda(dado.parcelaSistemaMensal)}</td>
-            ${projeto.financiarTerreno ? `
-                <td class="negative">${projeto.formatarMoeda(dado.parcelaTerrenoMensal)}</td>
-            ` : ''}
-            <td class="${dado.rendimentoBrutoMensal >= 0 ? 'positive' : 'negative'}">
-                ${projeto.formatarMoeda(dado.rendimentoBrutoMensal)}
-            </td>
-            <td class="negative">${projeto.formatarMoeda(dado.impostoMensal)}</td>
-            <td class="${dado.lucroLiquidoMensal >= 0 ? 'positive' : 'negative'}">
-                ${projeto.formatarMoeda(dado.lucroLiquidoMensal)}
-            </td>
-            <td class="percentage ${dado.porcentagemInvestimento >= 0 ? 'positive' : 'negative'}">
-                ${projeto.formatarPorcentagem(dado.porcentagemInvestimento)}
-            </td>
-            <td class="${dado.fluxoAcumulado >= 0 ? 'positive' : 'negative'}">
-                ${projeto.formatarMoeda(dado.fluxoAcumulado)}
-            </td>
-            <td>
-                <span class="status-dot status-${dado.status}"></span>
-                ${dado.status === 'carecia' ? 'Carência' : 
-                  dado.status === 'parcela' ? 'Parcela' :
-                  dado.status === 'terreno' ? 'Terreno' : 'Livre'}
-            </td>
-        </tr>
-    `).join('');
-    
-    // Atualizar informação de paginação
-    const totalPaginas = Math.ceil(dadosProjecao.dados.length / projeto.itensPorPagina);
-    document.getElementById('infoPagina').textContent = 
-        `Página ${projeto.paginaAtual} de ${totalPaginas}`;
-}
-
 function mudarPagina(direcao) {
-    if (!dadosProjecao) return;
+    const totalPaginas = Math.ceil(projeto.dadosMensais.length / projeto.itensPorPagina);
+    projeto.paginaAtual += direcao;
     
-    const totalPaginas = Math.ceil(dadosProjecao.dados.length / projeto.itensPorPagina);
-    const novaPagina = projeto.paginaAtual + direcao;
+    if (projeto.paginaAtual < 1) projeto.paginaAtual = 1;
+    if (projeto.paginaAtual > totalPaginas) projeto.paginaAtual = totalPaginas;
     
-    if (novaPagina >= 1 && novaPagina <= totalPaginas) {
-        projeto.paginaAtual = novaPagina;
-        atualizarTabela();
-    }
+    projeto.atualizarTabela();
 }
 
-function atualizarGraficos() {
-    if (!dadosProjecao || !dadosProjecao.dados.length) return;
+function toggleConfig() {
+    const configGrid = document.getElementById('configGrid');
+    const toggleButton = document.querySelector('.toggle-config');
     
-    const meses = dadosProjecao.dados.map(d => d.mes);
-    const lucros = dadosProjecao.dados.map(d => d.lucroLiquidoMensal);
-    const fluxoAcumulado = dadosProjecao.dados.map(d => d.fluxoAcumulado);
-    const porcentagens = dadosProjecao.dados.map(d => d.porcentagemInvestimento);
-    
-    // Destruir gráficos existentes
-    Object.values(projeto.graficos).forEach(grafico => {
-        if (grafico) grafico.destroy();
-    });
-    
-    // Gráfico 1: Lucro Mensal
-    projeto.graficos.lucroMensal = new Chart(document.getElementById('graficoLucroMensal'), {
-        type: 'bar',
-        data: {
-            labels: meses.slice(0, 60),
-            datasets: [{
-                label: 'Lucro Líquido Mensal (R$)',
-                data: lucros.slice(0, 60),
-                backgroundColor: lucros.slice(0, 60).map(l => l >= 0 ? 'rgba(39, 174, 96, 0.8)' : 'rgba(231, 76, 60, 0.8)'),
-                borderColor: lucros.slice(0, 60).map(l => l >= 0 ? '#27ae60' : '#e74c3c'),
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Reais (R$)' }
-                },
-                x: {
-                    title: { display: true, text: 'Meses' },
-                    ticks: { maxTicksLimit: 12 }
-                }
-            }
-        }
-    });
-    
-    // Gráfico 2: Porcentagem sobre Investimento
-    projeto.graficos.porcentagemInvestimento = new Chart(document.getElementById('graficoPorcentagemInvestimento'), {
-        type: 'line',
-        data: {
-            labels: meses,
-            datasets: [{
-                label: '% sobre Investimento Mensal',
-                data: porcentagens,
-                borderColor: '#2980b9',
-                backgroundColor: 'rgba(41, 128, 185, 0.1)',
-                borderWidth: 3,
-                fill: true,
-                pointBackgroundColor: porcentagens.map(p => p >= 0 ? '#27ae60' : '#e74c3c'),
-                pointBorderColor: porcentagens.map(p => p >= 0 ? '#219a52' : '#c0392b')
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    title: { display: true, text: 'Porcentagem (%)' }
-                },
-                x: {
-                    title: { display: true, text: 'Meses' },
-                    ticks: { maxTicksLimit: 10 }
-                }
-            }
-        }
-    });
-    
-    // Gráfico 3: Fluxo Acumulado
-    projeto.graficos.fluxoAcumulado = new Chart(document.getElementById('graficoFluxoAcumulado'), {
-        type: 'line',
-        data: {
-            labels: meses,
-            datasets: [{
-                label: 'Fluxo de Caixa Acumulado (R$)',
-                data: fluxoAcumulado,
-                borderColor: '#9b59b6',
-                backgroundColor: 'rgba(155, 89, 182, 0.1)',
-                borderWidth: 3,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { title: { display: true, text: 'Reais (R$)' } },
-                x: { title: { display: true, text: 'Meses' }, ticks: { maxTicksLimit: 10 } }
-            }
-        }
-    });
-    
-    // Gráfico 4: Composição (mês 18 como exemplo)
-    const mesExemplo = Math.min(18, dadosProjecao.dados.length - 1);
-    const dadoExemplo = dadosProjecao.dados[mesExemplo];
-    
-    const labelsComposicao = ['Receita Bruta', 'Custo Operacional', 'Custos Fixos', 'Parcela Sistema'];
-    const dadosComposicao = [
-        dadoExemplo.receitaBrutaMensal,
-        dadoExemplo.custoOperacionalMensal,
-        dadoExemplo.custosFixosMensais,
-        dadoExemplo.parcelaSistemaMensal
-    ];
-    
-    if (projeto.financiarTerreno) {
-        labelsComposicao.push('Parcela Terreno');
-        dadosComposicao.push(dadoExemplo.parcelaTerrenoMensal);
+    if (configGrid.style.display === 'none') {
+        configGrid.style.display = 'grid';
+        toggleButton.textContent = '⚙️ Ocultar Configurações';
+    } else {
+        configGrid.style.display = 'none';
+        toggleButton.textContent = '⚙️ Mostrar Configurações';
     }
-    
-    labelsComposicao.push('Imposto', 'Lucro Líquido');
-    dadosComposicao.push(dadoExemplo.impostoMensal, Math.max(0, dadoExemplo.lucroLiquidoMensal));
-    
-    projeto.graficos.composicao = new Chart(document.getElementById('graficoComposicao'), {
-        type: 'doughnut',
-        data: {
-            labels: labelsComposicao,
-            datasets: [{
-                data: dadosComposicao,
-                backgroundColor: [
-                    '#3498db', '#e74c3c', '#f39c12', '#e67e22', 
-                    projeto.financiarTerreno ? '#d35400' : '#9b59b6', 
-                    '#9b59b6', '#27ae60'
-                ].slice(0, labelsComposicao.length)
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: `Composição - Mês ${mesExemplo + 1}`
-                }
-            }
-        }
-    });
-}
-
-function exportarExcel() {
-    if (!dadosProjecao) {
-        alert('Calcule a projeção primeiro!');
-        return;
-    }
-    
-    const wb = XLSX.utils.book_new();
-    
-    // Dados gerais
-    const dadosGerais = [
-        ['MICRO USINA SOLAR - RELATÓRIO FINANCEIRO COMPLETO'],
-        ['Data', new Date().toLocaleDateString('pt-BR')],
-        [''],
-        ['PARÂMETROS CONFIGURADOS'],
-        ['Tarifa inicial (R$/kWh)', projeto.tarifaInicial],
-        ['Produção mensal (kWh)', projeto.producaoMensalKwh],
-        ['Reajuste tarifário anual', `${(projeto.reajusteTarifaAnual * 100)}%`],
-        ['Custo operacional total', `${(projeto.custoOperacionalPercentual * 100)}%`],
-        ['Imposto', `${(projeto.impostoPercentual * 100)}%`],
-        ['Período de análise', `${projeto.periodoAnalise} meses`],
-        ['Financiar terreno', projeto.financiarTerreno ? 'Sim' : 'Não'],
-        [''],
-        ['INVESTIMENTO TOTAL'],
-        ['Valor do sistema', projeto.formatarMoeda(projeto.valorSistema)],
-        ['Valor do terreno', projeto.formatarMoeda(projeto.valorTerreno)],
-        ['Custos iniciais', projeto.formatarMoeda(projeto.totalInvestimento - (projeto.financiarTerreno ? 0 : projeto.valorTerreno))],
-        ['Total investimento', projeto.formatarMoeda(projeto.investimentoTotal)],
-        ['']
-    ];
-    
-    if (projeto.financiarTerreno) {
-        dadosGerais.push(
-            ['FINANCIAMENTO DO TERRENO'],
-            ['Carência', `${projeto.mesesCarenciaTerreno} meses`],
-            ['Parcelas', `${projeto.parcelasTerreno}x de ${projeto.formatarMoeda(projeto.valorParcelaTerreno)}`],
-            ['']
-        );
-    }
-    
-    dadosGerais.push(
-        ['FINANCIAMENTO DO SISTEMA'],
-        ['Carência', `${projeto.mesesCarenciaSistema} meses`],
-        ['Parcelas', `${projeto.parcelasSistema}x de ${projeto.formatarMoeda(projeto.valorParcelaSistema)}`]
-    );
-    
-    const wsDados = XLSX.utils.aoa_to_sheet(dadosGerais);
-    XLSX.utils.book_append_sheet(wb, wsDados, "Configurações");
-    
-    // Dados mensais
-    const dadosFormatados = dadosProjecao.dados.map(d => {
-        const base = {
-            'Mês': d.mes,
-            'Ano': d.ano,
-            'Tarifa (R$/kWh)': d.tarifa,
-            'Receita Bruta (R$)': d.receitaBrutaMensal,
-            'Custo Operacional (R$)': d.custoOperacionalMensal,
-            'Custos Fixos (R$)': d.custosFixosMensais,
-            'Parcela Sistema (R$)': d.parcelaSistemaMensal,
-            'Rendimento Bruto (R$)': d.rendimentoBrutoMensal,
-            'Imposto (R$)': d.impostoMensal,
-            'Lucro Líquido (R$)': d.lucroLiquidoMensal,
-            '% sobre Investimento': d.porcentagemInvestimento,
-            'Fluxo Acumulado (R$)': d.fluxoAcumulado,
-            'Status': d.status === 'carecia' ? 'Carência' : 
-                     d.status === 'parcela' ? 'Parcela' :
-                     d.status === 'terreno' ? 'Terreno' : 'Livre'
-        };
-        
-        if (projeto.financiarTerreno) {
-            base['Parcela Terreno (R$)'] = d.parcelaTerrenoMensal;
-        }
-        
-        return base;
-    });
-    
-    const wsProjecao = XLSX.utils.json_to_sheet(dadosFormatados);
-    XLSX.utils.book_append_sheet(wb, wsProjecao, "Projeção Mensal");
-    
-    // Salvar
-    XLSX.writeFile(wb, `usina_solar_${new Date().toISOString().split('T')[0]}.xlsx`);
-}
-
-async function exportarPDF() {
-    if (!dadosProjecao) {
-        alert('Calcule a projeção primeiro!');
-        return;
-    }
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Título
-    doc.setFontSize(20);
-    doc.text('RELATÓRIO - MICRO USINA SOLAR', 105, 20, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 105, 30, { align: 'center' });
-    
-    // Resumo
-    let y = 50;
-    doc.setFontSize(16);
-    doc.text('RESUMO EXECUTIVO', 20, y);
-    y += 10;
-    
-    doc.setFontSize(10);
-    const indicadores = projeto.calcularIndicadores();
-    const payback = dadosProjecao.paybackMes ? 
-        `${Math.floor(dadosProjecao.paybackMes / 12)} anos e ${dadosProjecao.paybackMes % 12} meses` : 
-        'Não alcançado';
-    
-    const resumo = [
-        `Investimento Total: ${projeto.formatarMoeda(indicadores.investimentoTotal)}`,
-        `Financiar terreno: ${indicadores.financiarTerreno ? 'Sim' : 'Não'}`,
-        `Carência: ${projeto.mesesCarenciaSistema} meses`,
-        `Payback: ${payback}`,
-        `ROI Total: ${indicadores.roiTotal}%`,
-        `Porcentagem média mensal: ${projeto.formatarPorcentagem(indicadores.porcentagemMedia)}`,
-        `Lucro Total: ${projeto.formatarMoeda(indicadores.lucroTotal)}`
-    ];
-    
-    if (indicadores.financiarTerreno) {
-        resumo.splice(2, 0, `Parcela terreno: ${projeto.formatarMoeda(indicadores.valorParcelaTerreno)}/mês`);
-    }
-    
-    resumo.forEach((linha, index) => {
-        doc.text(linha, 20, y + (index * 7));
-    });
-    
-    y += 70;
-    
-    // Gráfico
-    try {
-        const canvas = await html2canvas(document.querySelector('.charts-container'));
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = 170;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        doc.addImage(imgData, 'PNG', 20, y, imgWidth, imgHeight);
-    } catch (error) {
-        console.error('Erro ao gerar gráfico PDF:', error);
-        doc.text('Erro ao gerar gráficos', 20, y);
-    }
-    
-    // Salvar PDF
-    doc.save(`usina_solar_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
 function resetarValores() {
@@ -691,10 +538,9 @@ function resetarValores() {
         
         // Resetar financiamento do terreno
         document.getElementById('financiarTerreno').checked = false;
-        document.getElementById('valorTerreno').value = '50000';
         document.getElementById('carenciaTerreno').value = '12';
         document.getElementById('numeroParcelasTerreno').value = '60';
-        document.getElementById('valorParcelaTerreno').value = '1455.45';
+        document.getElementById('valorParcelaTerreno').value = '1455.45';        
         toggleFinanciamentoTerreno();
         
         document.getElementById('cercamento').value = '6000';
@@ -713,18 +559,106 @@ function resetarValores() {
     }
 }
 
-function toggleConfig() {
-    const configGrid = document.getElementById('configGrid');
-    const toggleBtn = document.querySelector('.toggle-config');
-    
-    if (configGrid.style.display === 'none') {
-        configGrid.style.display = 'grid';
-        toggleBtn.textContent = '⚙️ Ocultar Configurações';
-    } else {
-        configGrid.style.display = 'none';
-        toggleBtn.textContent = '⚙️ Mostrar Configurações';
+function exportarExcel() {
+    try {
+        // Preparar dados para exportação
+        const dadosExportacao = projeto.dadosMensais.map(dado => ({
+            'Mês': dado.mes,
+            'Ano': dado.ano,
+            'Tarifa (R$/kWh)': dado.tarifa,
+            'Receita (R$)': dado.receitaBrutaMensal,
+            'Custo Operacional (R$)': dado.custoOperacionalMensal,
+            'Custos Fixos (R$)': dado.custosFixosMensais,
+            'Parcela Sistema (R$)': dado.parcelaSistema,
+            'Parcela Terreno (R$)': dado.parcelaTerreno,
+            'Rendimento Bruto (R$)': dado.rendimentoBruto,
+            'Imposto (R$)': dado.imposto,
+            'Lucro Líquido (R$)': dado.lucroLiquido,
+            '% sobre Investimento': dado.porcentagemInvestimento,
+            'Fluxo Acumulado (R$)': dado.fluxoAcumulado,
+            'Status': dado.status.replace(/<[^>]*>/g, '') // Remove tags HTML
+        }));
+        
+        // Criar worksheet
+        const ws = XLSX.utils.json_to_sheet(dadosExportacao);
+        
+        // Criar workbook
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Projeção Usina Solar');
+        
+        // Exportar
+        XLSX.writeFile(wb, 'projecao_usina_solar.xlsx');
+    } catch (error) {
+        alert('Erro ao exportar Excel: ' + error.message);
     }
 }
 
-// Inicializar quando a página carregar
-document.addEventListener('DOMContentLoaded', inicializar);
+function exportarPDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Título
+        doc.setFontSize(20);
+        doc.text('Relatório - Projeção Usina Solar', 20, 20);
+        
+        // Data de geração
+        doc.setFontSize(10);
+        doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 20, 30);
+        
+        // Resumo
+        doc.setFontSize(14);
+        doc.text('Resumo do Projeto', 20, 45);
+        
+        doc.setFontSize(10);
+        let yPos = 55;
+        doc.text(`Investimento Total: ${document.getElementById('investimentoTotal').textContent}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Payback: ${document.getElementById('payback').textContent}`, 20, yPos);
+        yPos += 7;
+        doc.text(`ROI Total: ${document.getElementById('roi').textContent}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Lucro Total: ${document.getElementById('lucroTotal').textContent}`, 20, yPos);
+        
+        // Adicionar gráficos (simplificado)
+        yPos += 15;
+        doc.setFontSize(12);
+        doc.text('Observação: Para dados completos, exporte para Excel.', 20, yPos);
+        
+        // Salvar PDF
+        doc.save('relatorio_usina_solar.pdf');
+    } catch (error) {
+        alert('Erro ao gerar PDF: ' + error.message);
+    }
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar evento de mudança no número de itens por página
+    document.getElementById('itensPorPagina').addEventListener('change', function() {
+        projeto.itensPorPagina = parseInt(this.value);
+        projeto.paginaAtual = 1;
+        projeto.atualizarTabela();
+    });
+    
+    // Configurar eventos para campos do terreno
+    document.getElementById('numeroParcelasTerreno').addEventListener('change', calcularValorTerreno);
+    document.getElementById('valorParcelaTerreno').addEventListener('change', calcularValorTerreno);
+    document.getElementById('carenciaTerreno').addEventListener('change', calcularProjecao);
+    
+    // Configurar eventos para outros campos que afetam o investimento total
+    document.getElementById('valorSistema').addEventListener('change', calcularProjecao);
+    document.querySelectorAll('#cercamento, #portao, #refletores, #cameras, #irrigacao').forEach(input => {
+        input.addEventListener('change', calcularProjecao);
+    });
+    
+    // Calcular projeção inicial
+    calcularProjecao();
+});
+
+// Configurar eventos de input para cálculos automáticos
+document.querySelectorAll('input').forEach(input => {
+    if (!input.id.includes('Terreno')) {
+        input.addEventListener('change', calcularProjecao);
+    }
+});
