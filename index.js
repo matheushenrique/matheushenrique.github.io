@@ -20,18 +20,17 @@ class ProjetoUsinaSolar {
         this.custoOperacionalPercentual = this.custoOperacional1 + this.custoOperacional2;
         this.impostoPercentual = parseFloat(document.getElementById('imposto').value) / 100;
         
-        // Financiamento do sistema
-        this.valorSistema = parseFloat(document.getElementById('valorSistema').value);
-        this.mesesCarenciaSistema = parseInt(document.getElementById('carenciaSistema').value);
+        // Financiamento do sistema - calculado automaticamente
         this.parcelasSistema = parseInt(document.getElementById('numeroParcelasSistema').value);
         this.valorParcelaSistema = parseFloat(document.getElementById('valorParcelaSistema').value);
+        this.valorSistema = this.parcelasSistema * this.valorParcelaSistema;
+        
+        this.mesesCarenciaSistema = parseInt(document.getElementById('carenciaSistema').value);
         this.mesInicioParcelasSistema = this.mesesCarenciaSistema + 1;
         this.mesFimParcelasSistema = this.mesesCarenciaSistema + this.parcelasSistema;
         
-        // Financiamento do terreno (opcional)
+        // Financiamento do terreno (opcional) - calculado automaticamente
         this.financiarTerreno = document.getElementById('financiarTerreno').checked;
-        
-        // Calcular valor do terreno automaticamente
         this.parcelasTerreno = parseInt(document.getElementById('numeroParcelasTerreno').value);
         this.valorParcelaTerreno = parseFloat(document.getElementById('valorParcelaTerreno').value);
         this.valorTerreno = this.parcelasTerreno * this.valorParcelaTerreno;
@@ -62,8 +61,8 @@ class ProjetoUsinaSolar {
         this.totalCustosMensaisBase = this.calcularTotalCustosMensaisBase();
         this.investimentoTotal = this.calcularInvestimentoTotal();
         
-        // Atualizar o campo de valor do terreno calculado
-        this.atualizarValorTerrenoCalculado();
+        // Atualizar os campos calculados
+        this.atualizarValoresCalculados();
     }
     
     calcularTotalInvestimento() {
@@ -80,7 +79,6 @@ class ProjetoUsinaSolar {
     calcularInvestimentoTotal() {
         // Investimento total = Valor do sistema + Valor do terreno + Custos iniciais
         let total = this.valorSistema + this.valorTerreno + Object.values(this.investimentoInicial).reduce((sum, val) => sum + val, 0);
-        console.log(this.valorSistema, this.valorTerreno, this.investimentoInicial, total); 
         return total;
     }
     
@@ -88,12 +86,16 @@ class ProjetoUsinaSolar {
         return Object.values(this.custosMensaisBase).reduce((sum, val) => sum + val, 0);
     }
     
-    atualizarValorTerrenoCalculado() {
+    atualizarValoresCalculados() {
+        // Atualizar valor do sistema calculado
+        const valorSistemaElement = document.getElementById('valorSistemaCalculado');
+        valorSistemaElement.textContent = this.formatarMoeda(this.valorSistema);
+        
+        // Atualizar valor do terreno calculado
         const valorTerrenoElement = document.getElementById('valorTerrenoCalculado');
         valorTerrenoElement.textContent = this.formatarMoeda(this.valorTerreno);
-    }
-    
-    atualizarInvestimentoTotal() {
+        
+        // Atualizar investimento total
         const investimentoTotalElement = document.getElementById('investimentoTotal');
         investimentoTotalElement.textContent = this.formatarMoeda(this.investimentoTotal);
     }
@@ -465,14 +467,21 @@ function calcularProjecao() {
     projeto.criarGraficos();
 }
 
+function calcularValorSistema() {
+    // Calcular valor do sistema automaticamente
+    const parcelas = parseInt(document.getElementById('numeroParcelasSistema').value) || 0;
+    const valorParcela = parseFloat(document.getElementById('valorParcelaSistema').value) || 0;
+    const valorSistema = parcelas * valorParcela;
+    
+    // Recalcular projeção
+    calcularProjecao();
+}
+
 function calcularValorTerreno() {
     // Calcular valor do terreno automaticamente
     const parcelas = parseInt(document.getElementById('numeroParcelasTerreno').value) || 0;
     const valorParcela = parseFloat(document.getElementById('valorParcelaTerreno').value) || 0;
     const valorTerreno = parcelas * valorParcela;
-    
-    // Atualizar o campo de valor do terreno
-    document.getElementById('valorTerrenoCalculado').textContent = projeto.formatarMoeda(valorTerreno);
     
     // Recalcular projeção
     calcularProjecao();
@@ -531,7 +540,7 @@ function resetarValores() {
         document.getElementById('custoOperacional2').value = '12.5';
         document.getElementById('imposto').value = '6';
         
-        document.getElementById('valorSistema').value = '120000';
+        // Resetar financiamento do sistema
         document.getElementById('carenciaSistema').value = '12';
         document.getElementById('numeroParcelasSistema').value = '60';
         document.getElementById('valorParcelaSistema').value = '3493.08';
@@ -540,7 +549,9 @@ function resetarValores() {
         document.getElementById('financiarTerreno').checked = false;
         document.getElementById('carenciaTerreno').value = '12';
         document.getElementById('numeroParcelasTerreno').value = '60';
-        document.getElementById('valorParcelaTerreno').value = '1455.45';        
+        document.getElementById('valorParcelaTerreno').value = '1455.45';
+        
+        // Chamar toggle para atualizar a interface
         toggleFinanciamentoTerreno();
         
         document.getElementById('cercamento').value = '6000';
@@ -641,13 +652,17 @@ document.addEventListener('DOMContentLoaded', function() {
         projeto.atualizarTabela();
     });
     
+    // Configurar eventos para campos do sistema
+    document.getElementById('numeroParcelasSistema').addEventListener('change', calcularValorSistema);
+    document.getElementById('valorParcelaSistema').addEventListener('change', calcularValorSistema);
+    document.getElementById('carenciaSistema').addEventListener('change', calcularProjecao);
+    
     // Configurar eventos para campos do terreno
     document.getElementById('numeroParcelasTerreno').addEventListener('change', calcularValorTerreno);
     document.getElementById('valorParcelaTerreno').addEventListener('change', calcularValorTerreno);
     document.getElementById('carenciaTerreno').addEventListener('change', calcularProjecao);
     
     // Configurar eventos para outros campos que afetam o investimento total
-    document.getElementById('valorSistema').addEventListener('change', calcularProjecao);
     document.querySelectorAll('#cercamento, #portao, #refletores, #cameras, #irrigacao').forEach(input => {
         input.addEventListener('change', calcularProjecao);
     });
@@ -658,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Configurar eventos de input para cálculos automáticos
 document.querySelectorAll('input').forEach(input => {
-    if (!input.id.includes('Terreno')) {
+    if (!input.id.includes('Parcela') && !input.id.includes('numeroParcelas')) {
         input.addEventListener('change', calcularProjecao);
     }
 });
