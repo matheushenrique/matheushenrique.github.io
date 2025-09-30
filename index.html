@@ -25,7 +25,8 @@
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1800px;
+            /* Aumentado para acomodar colunas maiores */
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -174,6 +175,10 @@
             background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
         }
 
+        .card.cartao {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        }
+
         .card h3 {
             font-size: 0.9em;
             margin-bottom: 10px;
@@ -281,25 +286,160 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1600px;
+            min-width: 2000px;
+            /* Aumentado significativamente */
         }
 
         th {
             background: #34495e;
             color: white;
-            padding: 15px;
+            padding: 15px 8px;
+            /* Reduzido padding horizontal */
             text-align: center;
             font-weight: 600;
             position: sticky;
             top: 0;
-            font-size: 0.9em;
+            font-size: 0.85em;
+            /* Reduzido tamanho da fonte */
+            white-space: nowrap;
+            /* Impede quebra de linha */
+            min-width: 80px;
+            /* Largura mínima para colunas */
         }
 
         td {
-            padding: 12px 10px;
+            padding: 12px 6px;
+            /* Reduzido padding horizontal */
             text-align: right;
             border-bottom: 1px solid #ecf0f1;
-            font-size: 0.85em;
+            font-size: 0.82em;
+            /* Reduzido tamanho da fonte */
+            white-space: nowrap;
+            /* Impede quebra de linha */
+            min-width: 80px;
+            /* Largura mínima para colunas */
+            max-width: 150px;
+            /* Largura máxima para evitar excesso */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Adiciona "..." se texto muito longo */
+        }
+
+        /* Larguras específicas para colunas importantes */
+        th:nth-child(1),
+        td:nth-child(1) {
+            /* Mês */
+            min-width: 60px;
+            max-width: 80px;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            /* Ano */
+            min-width: 50px;
+            max-width: 60px;
+        }
+
+        th:nth-child(3),
+        td:nth-child(3) {
+            /* Tarifa */
+            min-width: 100px;
+            max-width: 120px;
+        }
+
+        th:nth-child(4),
+        td:nth-child(4) {
+            /* Receita */
+            min-width: 120px;
+            max-width: 140px;
+        }
+
+        th:nth-child(5),
+        td:nth-child(5) {
+            /* Custo Operacional */
+            min-width: 120px;
+            max-width: 140px;
+        }
+
+        th:nth-child(6),
+        td:nth-child(6) {
+            /* Custos Fixos */
+            min-width: 100px;
+            max-width: 120px;
+        }
+
+        th:nth-child(7),
+        td:nth-child(7) {
+            /* Custos Iniciais */
+            min-width: 100px;
+            max-width: 120px;
+        }
+
+        th:nth-child(8),
+        td:nth-child(8) {
+            /* Custos Adicionais */
+            min-width: 120px;
+            max-width: 140px;
+        }
+
+        th:nth-child(9),
+        td:nth-child(9) {
+            /* Parcela Sistema */
+            min-width: 120px;
+            max-width: 140px;
+        }
+
+        th:nth-child(10),
+        td:nth-child(10) {
+            /* Parcela Terreno */
+            min-width: 120px;
+            max-width: 140px;
+        }
+
+        th:nth-child(11),
+        td:nth-child(11) {
+            /* Rend. Bruto */
+            min-width: 120px;
+            max-width: 140px;
+        }
+
+        th:nth-child(12),
+        td:nth-child(12) {
+            /* Imposto */
+            min-width: 100px;
+            max-width: 120px;
+        }
+
+        th:nth-child(13),
+        td:nth-child(13) {
+            /* Lucro Líq. */
+            min-width: 120px;
+            max-width: 140px;
+        }
+
+        th:nth-child(14),
+        td:nth-child(14) {
+            /* % sobre Invest. */
+            min-width: 100px;
+            max-width: 120px;
+        }
+
+        th:nth-child(15),
+        td:nth-child(15) {
+            /* Acumulado */
+            min-width: 140px;
+            max-width: 160px;
+        }
+
+        th:nth-child(16),
+        td:nth-child(16) {
+            /* Status */
+            min-width: 180px;
+            max-width: 220px;
+            text-align: left;
+            /* Status alinhado à esquerda */
+            white-space: normal;
+            /* Permite quebra de linha no status */
         }
 
         tr:hover {
@@ -429,6 +569,19 @@
             .header h1 {
                 font-size: 2em;
             }
+
+            /* Ajustes para telas menores */
+            table {
+                min-width: 2200px;
+                /* Aumentado para mobile */
+            }
+
+            th,
+            td {
+                font-size: 0.78em;
+                /* Fonte ainda menor em mobile */
+                padding: 10px 4px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -442,6 +595,15 @@
 
             .conditional-fields {
                 margin-left: 0;
+            }
+
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            body {
+                padding: 10px;
             }
         }
     </style>
@@ -466,7 +628,7 @@
                     </div>
                     <div class="input-row">
                         <label>Produção Mensal (kWh):</label>
-                        <input type="number" id="producaoMensal" value="6000" step="100" min="1000" max="50000">
+                        <input type="number" id="producaoMensal" value="10000" step="100" min="1000" max="50000">
                     </div>
                     <div class="input-row">
                         <label>Reajuste Tarifário (% a.a.):</label>
@@ -474,7 +636,7 @@
                     </div>
                     <div class="input-row">
                         <label>Período de Análise (meses):</label>
-                        <input type="number" id="periodoAnalise" value="120" step="12" min="12" max="300">
+                        <input type="number" id="periodoAnalise" value="300" step="12" min="12" max="360">
                     </div>
                 </div>
 
@@ -487,7 +649,7 @@
                     </div>
                     <div class="input-row">
                         <label>Custo Operacional 2 (%):</label>
-                        <input type="number" id="custoOperacional2" value="12.5" step="0.1" min="0" max="100">
+                        <input type="number" id="custoOperacional2" value="0" step="0.1" min="0" max="100">
                     </div>
                     <div class="input-row">
                         <label>Imposto (%):</label>
@@ -499,26 +661,97 @@
                 <div class="config-group">
                     <h3>🏦 Financiamento do Sistema</h3>
                     <div class="input-row">
-                        <label>Valor do Sistema (R$):</label>
-                        <div class="readonly-field" id="valorSistemaCalculado">R$ 0,00</div>
+                        <label>Método de Pagamento:</label>
+                        <select id="metodoPagamento" onchange="toggleMetodoPagamento()">
+                            <option value="cartao" selected>Cartão de Crédito</option>
+                            <option value="avista">À Vista</option>
+                            <option value="financiamento">Financiamento Bancário</option>
+                        </select>
                     </div>
-                    <div class="input-row">
-                        <label>Carência (meses):</label>
-                        <input type="number" id="carenciaSistema" value="12" step="1" min="0" max="60">
+
+                    <!-- Campos para Cartão de Crédito -->
+                    <div id="camposCartao">
+                        <div class="input-row">
+                            <label>Quantidade de Parcelas:</label>
+                            <input type="number" id="parcelasCartao" value="12" step="1" min="1" max="24">
+                        </div>
+                        <div class="input-row">
+                            <label>Número de Participantes:</label>
+                            <input type="number" id="numeroParticipantes" value="5" step="1" min="1" max="10">
+                        </div>
+                        <div class="input-row">
+                            <label>Valor por Participante (R$/mês):</label>
+                            <input type="number" id="valorPorParticipante" value="838.34" step="0.01" min="0"
+                                max="5000">
+                        </div>
+                        <div class="input-row">
+                            <label>Parcelas antes da Produção:</label>
+                            <input type="number" id="mesesAntesProducao" value="3" step="1" min="0" max="12">
+                        </div>
+                        <div class="input-row">
+                            <label>Custo Total do Cartão (R$):</label>
+                            <div class="readonly-field" id="custoTotalCartao">R$ 50.300,40</div>
+                        </div>
+                        <div class="input-row">
+                            <label>Parcela do Sistema (R$/mês):</label>
+                            <div class="readonly-field" id="parcelaSistemaCartao">R$ 4.191,70</div>
+                        </div>
                     </div>
-                    <div class="input-row">
-                        <label>Número de Parcelas:</label>
-                        <input type="number" id="numeroParcelasSistema" value="60" step="1" min="1" max="120">
-                    </div>
-                    <div class="input-row">
-                        <label>Valor da Parcela (R$):</label>
-                        <input type="number" id="valorParcelaSistema" value="3493.08" step="0.01" min="0" max="10000">
+
+                    <!-- Campos para Financiamento Bancário -->
+                    <div id="camposFinanciamento" style="display: none;">
+                        <div class="input-row">
+                            <label>Carência (meses):</label>
+                            <input type="number" id="carenciaSistema" value="12" step="1" min="0" max="60">
+                        </div>
+                        <div class="input-row">
+                            <label>Número de Parcelas:</label>
+                            <input type="number" id="numeroParcelasSistema" value="60" step="1" min="1" max="120">
+                        </div>
+                        <div class="input-row">
+                            <label>Valor da Parcela (R$):</label>
+                            <input type="number" id="valorParcelaSistema" value="3493.08" step="0.01" min="0"
+                                max="10000">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Grupo 4: Financiamento do Terreno (OPCIONAL) -->
+                <!-- Grupo 4: Custos Adicionais -->
                 <div class="config-group">
-                    <h3>🏞️ Financiamento do Terreno (Opcional)</h3>
+                    <h3>🔧 Custos Adicionais</h3>
+                    <div class="input-row">
+                        <label>Construção/Pedreiro (R$):</label>
+                        <input type="number" id="construcao" value="17000" step="100" min="0" max="100000">
+                    </div>
+                    <div class="input-row">
+                        <label>Postes (R$):</label>
+                        <input type="number" id="postes" value="1200" step="100" min="0" max="50000">
+                    </div>
+                    <div class="input-row">
+                        <label>Padrão (R$):</label>
+                        <input type="number" id="padrao" value="800" step="100" min="0" max="20000">
+                    </div>
+                    <div class="input-row">
+                        <label>Instalação Elétrica (R$):</label>
+                        <input type="number" id="instalacaoEletrica" value="12600" step="100" min="0" max="50000">
+                    </div>
+                    <div class="input-row">
+                        <label>Cabeamento (R$):</label>
+                        <input type="number" id="cabeamento" value="4000" step="100" min="0" max="30000">
+                    </div>
+                    <div class="input-row">
+                        <label>Parcelamento (vezes):</label>
+                        <input type="number" id="parcelamentoCustosAdicionais" value="10" step="1" min="1" max="24">
+                    </div>
+                    <div class="input-row">
+                        <label>Valor Total dos Custos (R$):</label>
+                        <div class="readonly-field" id="valorTotalSistema">R$ 35.600,00</div>
+                    </div>
+                </div>
+
+                <!-- Grupo 5: Financiamento do Terreno -->
+                <div class="config-group">
+                    <h3>🏞️ Financiamento do Terreno</h3>
                     <div class="checkbox-row">
                         <input type="checkbox" id="financiarTerreno" onchange="toggleFinanciamentoTerreno()">
                         <label for="financiarTerreno" style="font-weight: 600;">Financiar o terreno</label>
@@ -531,23 +764,22 @@
                         </div>
                         <div class="input-row">
                             <label>Carência (meses):</label>
-                            <input type="number" id="carenciaTerreno" value="12" step="1" min="0" max="60">
+                            <input type="number" id="carenciaTerreno" value="0" step="1" min="0" max="60">
                         </div>
                         <div class="input-row">
                             <label>Número de Parcelas:</label>
-                            <input type="number" id="numeroParcelasTerreno" value="60" step="1" min="1" max="144">
+                            <input type="number" id="numeroParcelasTerreno" value="0" step="1" min="0" max="144">
                         </div>
                         <div class="input-row">
                             <label>Valor da Parcela (R$):</label>
-                            <input type="number" id="valorParcelaTerreno" value="1455.45" step="0.01" min="0"
-                                max="10000">
+                            <input type="number" id="valorParcelaTerreno" value="0" step="0.01" min="0" max="10000">
                         </div>
                     </div>
                 </div>
 
-                <!-- Grupo 5: Custos Iniciais -->
+                <!-- Grupo 6: Custos Iniciais (À Vista) -->
                 <div class="config-group">
-                    <h3>🏗️ Custos Iniciais (À Vista)</h3>
+                    <h3>🏗️ Custos Iniciais</h3>
                     <div class="input-row">
                         <label>Cercamento (R$):</label>
                         <input type="number" id="cercamento" value="6000" step="100" min="0" max="100000">
@@ -568,9 +800,21 @@
                         <label>Irrigação (R$):</label>
                         <input type="number" id="irrigacao" value="500" step="10" min="0" max="10000">
                     </div>
+                    <div class="input-row">
+                        <label>Parcelamento (vezes):</label>
+                        <input type="number" id="parcelamentoCustosIniciais" value="10" step="1" min="1" max="24">
+                    </div>
+                    <div class="input-row">
+                        <label>Total Custos Iniciais (R$):</label>
+                        <div class="readonly-field" id="valorTotalCustosIniciais">R$ 10.500,00</div>
+                    </div>
+                    <div class="input-row">
+                        <label>Parcela Mensal (R$):</label>
+                        <div class="readonly-field" id="parcelaMensalCustosIniciais">R$ 10.500,00</div>
+                    </div>
                 </div>
 
-                <!-- Grupo 6: Custos Mensais -->
+                <!-- Grupo 7: Custos Mensais -->
                 <div class="config-group">
                     <h3>📅 Custos Mensais</h3>
                     <div class="input-row">
@@ -601,7 +845,7 @@
             <div class="card investimento">
                 <h3>💰 Investimento Total</h3>
                 <div class="value" id="investimentoTotal">R$ 0,00</div>
-                <div class="subtitle">Sistema + Terreno + Custos Iniciais</div>
+                <div class="subtitle">Financiamento + Custos Adicionais + Iniciais + Terreno</div>
             </div>
             <div class="card">
                 <h3>⏱️ Payback</h3>
@@ -617,6 +861,11 @@
                 <h3>🏞️ Parcela do Terreno</h3>
                 <div class="value" id="parcelaTerreno">R$ 0,00</div>
                 <div class="subtitle">Parcela mensal do terreno</div>
+            </div>
+            <div class="card cartao" id="cardCartao">
+                <h3>💳 Custo Total Cartão</h3>
+                <div class="value" id="custoTotalCartaoResumo">R$ 50.300,40</div>
+                <div class="subtitle">Valor total financiado</div>
             </div>
             <div class="card">
                 <h3>💵 Lucro Total</h3>
@@ -667,6 +916,8 @@
                             <th>Receita (R$)</th>
                             <th>Custo Oper. (R$)</th>
                             <th>Custos Fixos (R$)</th>
+                            <th>Custos Iniciais (R$)</th>
+                            <th>Custos Adicionais (R$)</th>
                             <th>Parcela Sistema (R$)</th>
                             <th id="thParcelaTerreno" style="display: none;">Parcela Terreno (R$)</th>
                             <th>Rend. Bruto (R$)</th>
