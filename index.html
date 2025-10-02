@@ -151,19 +151,28 @@
 
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
             background: white;
         }
 
         .card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .card.terreno {
@@ -179,21 +188,24 @@
         }
 
         .card h3 {
-            font-size: 0.9em;
-            margin-bottom: 10px;
+            font-size: 0.85em;
+            margin-bottom: 8px;
             opacity: 0.9;
             font-weight: 500;
+            line-height: 1.2;
         }
 
         .card .value {
-            font-size: 1.8em;
+            font-size: 1.4em;
             font-weight: bold;
-            margin: 10px 0;
+            margin: 8px 0;
+            line-height: 1.2;
         }
 
         .card .subtitle {
-            font-size: 0.8em;
+            font-size: 0.75em;
             opacity: 0.8;
+            line-height: 1.2;
         }
 
         .controls {
@@ -334,31 +346,31 @@
         th:nth-child(4),
         td:nth-child(4) {
             min-width: 120px;
-            max-width: 150px;
+            max-width: 155px;
         }
 
         th:nth-child(5),
         td:nth-child(5) {
             min-width: 120px;
-            max-width: 150px;
+            max-width: 155px;
         }
 
         th:nth-child(6),
         td:nth-child(6) {
             min-width: 100px;
-            max-width: 150px;
+            max-width: 155px;
         }
 
         th:nth-child(7),
         td:nth-child(7) {
             min-width: 100px;
-            max-width: 150px;
+            max-width: 155px;
         }
 
         th:nth-child(8),
         td:nth-child(8) {
             min-width: 120px;
-            max-width: 155px;
+            max-width: 165px;
         }
 
         th:nth-child(9),
@@ -370,13 +382,13 @@
         th:nth-child(10),
         td:nth-child(10) {
             min-width: 120px;
-            max-width: 140px;
+            max-width: 155px;
         }
 
         th:nth-child(11),
         td:nth-child(11) {
             min-width: 120px;
-            max-width: 140px;
+            max-width: 155px;
         }
 
         th:nth-child(12),
@@ -516,7 +528,47 @@
             margin-bottom: 15px;
         }
 
+        /* Media Queries para summary-cards */
+        @media (max-width: 1400px) {
+            .summary-cards {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 12px;
+                padding: 15px;
+            }
+
+            .card {
+                padding: 15px;
+                min-height: 110px;
+            }
+
+            .card .value {
+                font-size: 1.3em;
+            }
+
+            .card h3 {
+                font-size: 0.8em;
+            }
+
+            .card .subtitle {
+                font-size: 0.7em;
+            }
+        }
+
         @media (max-width: 1200px) {
+            .summary-cards {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 10px;
+            }
+
+            .card {
+                padding: 12px;
+                min-height: 100px;
+            }
+
+            .card .value {
+                font-size: 1.2em;
+            }
+
             .config-grid {
                 grid-template-columns: 1fr;
             }
@@ -551,6 +603,25 @@
         }
 
         @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+                min-height: 100px;
+            }
+
+            .card .value {
+                font-size: 1.3em;
+            }
+
+            .card h3 {
+                font-size: 0.8em;
+            }
+
             .input-row {
                 grid-template-columns: 1fr;
             }
@@ -570,6 +641,43 @@
 
             body {
                 padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .card {
+                padding: 12px;
+                min-height: 90px;
+            }
+
+            .card .value {
+                font-size: 1.2em;
+            }
+
+            .card h3 {
+                font-size: 0.75em;
+            }
+
+            .card .subtitle {
+                font-size: 0.65em;
+            }
+        }
+
+        /* Estilo para quando há muitos cards (mais de 6) */
+        @media (max-width: 1400px) and (min-width: 1201px) {
+            .summary-cards:has(.card:nth-child(7)) {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) and (min-width: 769px) {
+            .summary-cards:has(.card:nth-child(7)) {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
     </style>
