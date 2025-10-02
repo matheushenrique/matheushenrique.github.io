@@ -8,7 +8,6 @@ class ProjetoUsinaSolar {
   }
 
   carregarConfiguracoes() {
-    // ... (o restante do método permanece igual)
     // Parâmetros básicos
     this.tarifaInicial = parseFloat(
       document.getElementById("tarifaInicial").value
@@ -115,17 +114,21 @@ class ProjetoUsinaSolar {
 
     // Financiamento do terreno (opcional)
     this.financiarTerreno = document.getElementById("financiarTerreno").checked;
+
+    // Capturar valor de entrada
+    this.entradaTerreno =
+      parseFloat(document.getElementById("entradaTerreno").value) || 0;
     this.parcelasTerreno =
       parseInt(document.getElementById("numeroParcelasTerreno").value) || 0;
     this.valorParcelaTerreno =
       parseFloat(document.getElementById("valorParcelaTerreno").value) || 0;
-    this.valorTerreno = this.parcelasTerreno * this.valorParcelaTerreno;
+
+    // Calcular valor total do terreno (entrada + parcelas)
+    this.valorTerreno =
+      this.entradaTerreno + this.parcelasTerreno * this.valorParcelaTerreno;
 
     this.mesesCarenciaTerreno =
       parseInt(document.getElementById("carenciaTerreno").value) || 0;
-    this.mesInicioParcelasTerreno = this.mesesCarenciaTerreno + 1;
-    this.mesFimParcelasTerreno =
-      this.mesesCarenciaTerreno + this.parcelasTerreno;
 
     // Custos iniciais
     this.investimentoInicial = {
@@ -204,7 +207,6 @@ class ProjetoUsinaSolar {
   }
 
   atualizarValoresCalculados() {
-    // ... (o restante do método permanece igual)
     const valorTotalSistemaElement =
       document.getElementById("valorTotalSistema");
     valorTotalSistemaElement.textContent = this.formatarMoeda(
@@ -260,11 +262,10 @@ class ProjetoUsinaSolar {
   calcularProjecaoMensal() {
     this.carregarConfiguracoes();
     this.dadosMensais = [];
-    let fluxoAcumulado = 0; // MODIFICADO: Inicia em 0 em vez de -this.totalInvestimento
+    let fluxoAcumulado = 0;
     let paybackAlcancado = false;
     let mesPayback = 0;
 
-    // Adicionar meses anteriores à produção (apenas para cartão de crédito)
     const mesesAnterioresProducao =
       this.metodoPagamento === "cartao" ? this.mesesAntesProducao : 0;
     const mesInicioProducao = 1;
@@ -278,6 +279,19 @@ class ProjetoUsinaSolar {
     // Determinar o mês de início das parcelas dos custos iniciais e adicionais
     let mesInicioCustosIniciais = 1 - mesesAnterioresProducao;
     let mesInicioCustosAdicionais = 1 - mesesAnterioresProducao;
+
+    // CORREÇÃO: Calcular início das parcelas do terreno para coincidir com custos iniciais
+    let mesInicioParcelasTerreno = mesInicioCustosIniciais;
+    if (this.financiarTerreno && this.entradaTerreno > 0) {
+      // Se há entrada, as parcelas começam uma linha após os custos iniciais
+      mesInicioParcelasTerreno = mesInicioCustosIniciais + 1;
+    }
+
+    // Aplicar carência do terreno
+    mesInicioParcelasTerreno += this.mesesCarenciaTerreno;
+
+    const mesFimParcelasTerreno =
+      mesInicioParcelasTerreno + this.parcelasTerreno - 1;
 
     // Calcular o total de meses (incluindo meses anteriores)
     const totalMeses = this.periodoAnalise + mesesAnterioresProducao;
@@ -351,15 +365,20 @@ class ProjetoUsinaSolar {
         parcelaCustosIniciais = valorParcelaCustosIniciais;
       }
 
-      // Parcela do terreno (se financiado) - só após início da produção
+      // CORREÇÃO: Parcela do terreno - entrada na primeira linha, parcelas alinhadas com custos iniciais
       let parcelaTerreno = 0;
-      if (
-        this.financiarTerreno &&
-        mes >= 1 &&
-        mes >= this.mesInicioParcelasTerreno &&
-        mes <= this.mesFimParcelasTerreno
-      ) {
-        parcelaTerreno = this.valorParcelaTerreno;
+      if (this.financiarTerreno) {
+        // Entrada na primeira linha (primeiro mês de pré-produção)
+        if (mes === 1 - mesesAnterioresProducao && this.entradaTerreno > 0) {
+          parcelaTerreno = this.entradaTerreno;
+        }
+        // Parcelas normais do terreno (alinhadas com custos iniciais, exceto quando há entrada)
+        else if (
+          mes >= mesInicioParcelasTerreno &&
+          mes <= mesFimParcelasTerreno
+        ) {
+          parcelaTerreno = this.valorParcelaTerreno;
+        }
       }
 
       // Rendimento bruto
@@ -387,7 +406,7 @@ class ProjetoUsinaSolar {
           ? (lucroLiquido / this.investimentoTotal) * 100
           : 0;
 
-      // Fluxo acumulado - MODIFICADO: Agora acumula apenas os valores mensais
+      // Fluxo acumulado
       fluxoAcumulado += lucroLiquido;
 
       // Verifica payback (apenas a partir do mês 1)
@@ -427,11 +446,15 @@ class ProjetoUsinaSolar {
         }
       }
 
+      // Status específico para financiamento do terreno
       if (this.financiarTerreno) {
-        if (mes < this.mesInicioParcelasTerreno) {
+        if (mes === 1 - mesesAnterioresProducao && this.entradaTerreno > 0) {
+          status +=
+            ' <span class="status-dot status-terreno"></span>Entrada Terreno';
+        } else if (mes < mesInicioParcelasTerreno) {
           status +=
             ' <span class="status-dot status-carecia"></span>Carência Terreno';
-        } else if (mes <= this.mesFimParcelasTerreno) {
+        } else if (mes <= mesFimParcelasTerreno) {
           status +=
             ' <span class="status-dot status-terreno"></span>Parcela Terreno';
         }
@@ -479,7 +502,7 @@ class ProjetoUsinaSolar {
     // Formatar valores
     lucroTotalElement.textContent = this.formatarMoeda(fluxoAcumulado);
 
-    // Calcular ROI - MODIFICADO: Agora usa fluxoAcumulado que já não inclui o investimento inicial
+    // Calcular ROI
     const roi = ((fluxoAcumulado / this.investimentoTotal) * 100).toFixed(1);
     roiElement.textContent = `${roi}%`;
 
@@ -579,11 +602,7 @@ class ProjetoUsinaSolar {
                   this.financiarTerreno
                     ? `<td class="${
                         dado.parcelaTerreno > 0 ? "negative" : "neutral"
-                      }">${
-                        dado.mes < 1
-                          ? "-"
-                          : this.formatarMoeda(dado.parcelaTerreno)
-                      }</td>`
+                      }">${this.formatarMoeda(dado.parcelaTerreno)}</td>`
                     : ""
                 }
                 <td class="${
@@ -619,7 +638,6 @@ class ProjetoUsinaSolar {
   }
 
   criarGraficos() {
-    // ... (o restante do método permanece igual)
     const ctxLucroMensal = document
       .getElementById("graficoLucroMensal")
       .getContext("2d");
@@ -836,8 +854,6 @@ class ProjetoUsinaSolar {
   }
 }
 
-// ... (o restante do código permanece igual)
-
 // Instância global do projeto
 let projeto = new ProjetoUsinaSolar();
 
@@ -919,11 +935,17 @@ function calcularValorSistema() {
 
 function calcularValorTerreno() {
   // Calcular valor do terreno automaticamente
+  const entrada =
+    parseFloat(document.getElementById("entradaTerreno").value) || 0;
   const parcelas =
     parseInt(document.getElementById("numeroParcelasTerreno").value) || 0;
   const valorParcela =
     parseFloat(document.getElementById("valorParcelaTerreno").value) || 0;
-  const valorTerreno = parcelas * valorParcela;
+  const valorTerreno = entrada + parcelas * valorParcela;
+
+  // Atualizar o campo de valor total do terreno
+  document.getElementById("valorTerrenoCalculado").textContent =
+    projeto.formatarMoeda(valorTerreno);
 
   // Recalcular projeção
   calcularProjecao();
@@ -1003,6 +1025,7 @@ function resetarValores() {
 
     // Resetar financiamento do terreno (valores zero)
     document.getElementById("financiarTerreno").checked = false;
+    document.getElementById("entradaTerreno").value = "0";
     document.getElementById("carenciaTerreno").value = "0";
     document.getElementById("numeroParcelasTerreno").value = "0";
     document.getElementById("valorParcelaTerreno").value = "0";
@@ -1176,6 +1199,9 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("change", toggleMetodoPagamento);
 
   // Configurar eventos para campos do terreno
+  document
+    .getElementById("entradaTerreno")
+    .addEventListener("change", calcularValorTerreno);
   document
     .getElementById("numeroParcelasTerreno")
     .addEventListener("change", calcularValorTerreno);

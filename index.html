@@ -26,7 +26,6 @@
 
         .container {
             max-width: 1800px;
-            /* Aumentado para acomodar colunas maiores */
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -287,159 +286,129 @@
             width: 100%;
             border-collapse: collapse;
             min-width: 2000px;
-            /* Aumentado significativamente */
         }
 
         th {
             background: #34495e;
             color: white;
             padding: 15px 8px;
-            /* Reduzido padding horizontal */
             text-align: center;
             font-weight: 600;
             position: sticky;
             top: 0;
             font-size: 0.85em;
-            /* Reduzido tamanho da fonte */
             white-space: nowrap;
-            /* Impede quebra de linha */
             min-width: 80px;
-            /* Largura mínima para colunas */
         }
 
         td {
             padding: 12px 6px;
-            /* Reduzido padding horizontal */
             text-align: right;
             border-bottom: 1px solid #ecf0f1;
             font-size: 0.82em;
-            /* Reduzido tamanho da fonte */
             white-space: nowrap;
-            /* Impede quebra de linha */
             min-width: 80px;
-            /* Largura mínima para colunas */
             max-width: 150px;
-            /* Largura máxima para evitar excesso */
             overflow: hidden;
             text-overflow: ellipsis;
-            /* Adiciona "..." se texto muito longo */
         }
 
-        /* Larguras específicas para colunas importantes */
         th:nth-child(1),
         td:nth-child(1) {
-            /* Mês */
             min-width: 60px;
             max-width: 80px;
         }
 
         th:nth-child(2),
         td:nth-child(2) {
-            /* Ano */
             min-width: 50px;
             max-width: 60px;
         }
 
         th:nth-child(3),
         td:nth-child(3) {
-            /* Tarifa */
             min-width: 100px;
             max-width: 120px;
         }
 
         th:nth-child(4),
         td:nth-child(4) {
-            /* Receita */
             min-width: 120px;
             max-width: 140px;
         }
 
         th:nth-child(5),
         td:nth-child(5) {
-            /* Custo Operacional */
             min-width: 120px;
             max-width: 140px;
         }
 
         th:nth-child(6),
         td:nth-child(6) {
-            /* Custos Fixos */
             min-width: 100px;
             max-width: 120px;
         }
 
         th:nth-child(7),
         td:nth-child(7) {
-            /* Custos Iniciais */
             min-width: 100px;
             max-width: 120px;
         }
 
         th:nth-child(8),
         td:nth-child(8) {
-            /* Custos Adicionais */
             min-width: 120px;
             max-width: 140px;
         }
 
         th:nth-child(9),
         td:nth-child(9) {
-            /* Parcela Sistema */
             min-width: 120px;
             max-width: 140px;
         }
 
         th:nth-child(10),
         td:nth-child(10) {
-            /* Parcela Terreno */
             min-width: 120px;
             max-width: 140px;
         }
 
         th:nth-child(11),
         td:nth-child(11) {
-            /* Rend. Bruto */
             min-width: 120px;
             max-width: 140px;
         }
 
         th:nth-child(12),
         td:nth-child(12) {
-            /* Imposto */
             min-width: 100px;
             max-width: 120px;
         }
 
         th:nth-child(13),
         td:nth-child(13) {
-            /* Lucro Líq. */
             min-width: 120px;
             max-width: 140px;
         }
 
         th:nth-child(14),
         td:nth-child(14) {
-            /* % sobre Invest. */
             min-width: 100px;
             max-width: 120px;
         }
 
         th:nth-child(15),
         td:nth-child(15) {
-            /* Acumulado */
             min-width: 140px;
             max-width: 160px;
         }
 
         th:nth-child(16),
         td:nth-child(16) {
-            /* Status */
             min-width: 180px;
             max-width: 220px;
             text-align: left;
-            /* Status alinhado à esquerda */
             white-space: normal;
-            /* Permite quebra de linha no status */
         }
 
         tr:hover {
@@ -570,16 +539,13 @@
                 font-size: 2em;
             }
 
-            /* Ajustes para telas menores */
             table {
                 min-width: 2200px;
-                /* Aumentado para mobile */
             }
 
             th,
             td {
                 font-size: 0.78em;
-                /* Fonte ainda menor em mobile */
                 padding: 10px 4px;
             }
         }
@@ -673,7 +639,7 @@
                     <div id="camposCartao">
                         <div class="input-row">
                             <label>Quantidade de Parcelas:</label>
-                            <input type="number" id="parcelasCartao" value="12" step="1" min="1" max="24">
+                            <input type="number" id="parcelasCartao" value="21" step="1" min="1" max="24">
                         </div>
                         <div class="input-row">
                             <label>Número de Participantes:</label>
@@ -681,7 +647,7 @@
                         </div>
                         <div class="input-row">
                             <label>Valor por Participante (R$/mês):</label>
-                            <input type="number" id="valorPorParticipante" value="838.34" step="0.01" min="0"
+                            <input type="number" id="valorPorParticipante" value="628.57" step="0.01" min="0"
                                 max="5000">
                         </div>
                         <div class="input-row">
@@ -733,7 +699,7 @@
                     </div>
                     <div class="input-row">
                         <label>Instalação Elétrica (R$):</label>
-                        <input type="number" id="instalacaoEletrica" value="12600" step="100" min="0" max="50000">
+                        <input type="number" id="instalacaoEletrica" value="15680" step="100" min="0" max="50000">
                     </div>
                     <div class="input-row">
                         <label>Cabeamento (R$):</label>
@@ -759,20 +725,28 @@
 
                     <div id="camposTerreno" class="conditional-fields" style="display: none;">
                         <div class="input-row">
-                            <label>Valor do Terreno (R$):</label>
-                            <div class="readonly-field" id="valorTerrenoCalculado">R$ 0,00</div>
+                            <label>Valor de Entrada (R$):</label>
+                            <input type="number" id="entradaTerreno" value="0" step="100" min="0" max="100000"
+                                onchange="calcularValorTerreno()">
                         </div>
                         <div class="input-row">
                             <label>Carência (meses):</label>
-                            <input type="number" id="carenciaTerreno" value="0" step="1" min="0" max="60">
+                            <input type="number" id="carenciaTerreno" value="0" step="1" min="0" max="60"
+                                onchange="calcularProjecao()">
                         </div>
                         <div class="input-row">
                             <label>Número de Parcelas:</label>
-                            <input type="number" id="numeroParcelasTerreno" value="0" step="1" min="0" max="144">
+                            <input type="number" id="numeroParcelasTerreno" value="0" step="1" min="0" max="144"
+                                onchange="calcularValorTerreno()">
                         </div>
                         <div class="input-row">
                             <label>Valor da Parcela (R$):</label>
-                            <input type="number" id="valorParcelaTerreno" value="0" step="0.01" min="0" max="10000">
+                            <input type="number" id="valorParcelaTerreno" value="0" step="0.01" min="0" max="10000"
+                                onchange="calcularValorTerreno()">
+                        </div>
+                        <div class="input-row">
+                            <label>Valor Total do Terreno (R$):</label>
+                            <div class="readonly-field" id="valorTerrenoCalculado">R$ 0,00</div>
                         </div>
                     </div>
                 </div>
