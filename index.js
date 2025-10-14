@@ -316,6 +316,12 @@ class ProjetoUsinaSolar {
         receitaBrutaMensal = this.producaoMensalKwh * tarifa;
       }
 
+      // Imposto (sobre a receita bruta, se houver receita)
+      let imposto = 0;
+      if (receitaBrutaMensal > 0 && mes >= 1) {
+        imposto = receitaBrutaMensal * this.impostoPercentual;
+      }
+
       // Custos operacionais (percentual da receita - ZERO se não há receita)
       const custoOperacionalMensal =
         receitaBrutaMensal * this.custoOperacionalPercentual;
@@ -392,10 +398,6 @@ class ProjetoUsinaSolar {
         parcelaTerreno;
 
       // Imposto (sobre o rendimento bruto, se positivo)
-      let imposto = 0;
-      if (rendimentoBruto > 0 && mes >= 1) {
-        imposto = rendimentoBruto * this.impostoPercentual;
-      }
 
       // Lucro líquido
       const lucroLiquido = rendimentoBruto - imposto;
