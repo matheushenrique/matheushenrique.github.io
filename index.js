@@ -216,7 +216,7 @@ class ProjetoUsinaSolar {
     document.getElementById("resumoMaoObraEletrica").textContent =
       this.formatarMoeda(subtotalEletrica);
 
-    // Calcular subtotal Materiais (COM ESTACAS ADICIONADO)
+    // Calcular subtotal Materiais
     const alvenaria =
       parseFloat(document.getElementById("alvenaria").value) || 0;
     const postes = parseFloat(document.getElementById("postes").value) || 0;
@@ -1074,7 +1074,7 @@ function resetarValores() {
     document.getElementById("mesesAntesProducao").value = "3";
 
     // Resetar Mão de Obra Civil
-    document.getElementById("construcao").value = "12000";
+    document.getElementById("construcao").value = "10000";
     document.getElementById("preparacaoTerreno").value = "500";
     document.getElementById("cercamento").value = "4700";
 
@@ -1083,7 +1083,7 @@ function resetarValores() {
     document.getElementById("instalacaoPadrao").value = "0";
     document.getElementById("instalacaoMesa").value = "0";
 
-    // Resetar Materiais de Construção (COM ESTACAS ADICIONADO)
+    // Resetar Materiais de Construção
     document.getElementById("alvenaria").value = "4000";
     document.getElementById("postes").value = "1730";
     document.getElementById("portao").value = "3000";
@@ -1100,11 +1100,11 @@ function resetarValores() {
     // Resetar custos iniciais
     document.getElementById("refletores").value = "200";
     document.getElementById("cameras").value = "800";
-    document.getElementById("irrigacao").value = "500";
+    document.getElementById("irrigacao").value = "0";
     document.getElementById("instalacaoHidraulica").value = "450";
     document.getElementById("parcelamentoCustosIniciais").value = "10";
 
-    // Resetar custos mensais (COM SEGURO ADICIONADO)
+    // Resetar custos mensais
     document.getElementById("internet").value = "100";
     document.getElementById("taxaIluminacao").value = "100";
     document.getElementById("monitoramento").value = "100";
@@ -1318,7 +1318,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Materiais de Construção (COM ESTACAS ADICIONADO)
+  // Event listeners para Materiais de Construção
   document
     .querySelectorAll(
       "#alvenaria, #postes, #portao, #estacas, #materiaisDiversos, #parcelamentoCustosAdicionais"
@@ -1330,7 +1330,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Custos Mensais (COM SEGURO ADICIONADO)
+  // Event listeners para Custos Mensais
   document
     .querySelectorAll(
       "#internet, #taxaIluminacao, #monitoramento, #seguro, #agua, #contadora"
