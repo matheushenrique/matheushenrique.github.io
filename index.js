@@ -34,15 +34,37 @@ class ProjetoUsinaSolar {
     // Configurações do sistema
     this.metodoPagamento = document.getElementById("metodoPagamento").value;
 
-    // Custos adicionais
+    // Custos adicionais - agora separados por módulos
     this.custosAdicionais = {
+      // Mão de Obra Civil
       construcao: parseFloat(document.getElementById("construcao").value),
-      postes: parseFloat(document.getElementById("postes").value),
-      padrao: parseFloat(document.getElementById("padrao").value),
-      instalacaoEletrica: parseFloat(
-        document.getElementById("instalacaoEletrica").value
+      preparacaoTerreno: parseFloat(
+        document.getElementById("preparacaoTerreno").value
       ),
+      fundamentos: parseFloat(document.getElementById("fundamentos").value),
+      alvenaria: parseFloat(document.getElementById("alvenaria").value),
+
+      // Mão de Obra Elétrica (apenas 3 campos)
+      instalacaoPaineis: parseFloat(
+        document.getElementById("instalacaoPaineis").value
+      ),
+      instalacaoPadrao: parseFloat(
+        document.getElementById("instalacaoPadrao").value
+      ),
+      instalacaoMesa: parseFloat(
+        document.getElementById("instalacaoMesa").value
+      ),
+
+      // Materiais
+      postes: parseFloat(document.getElementById("postes").value),
       cabeamento: parseFloat(document.getElementById("cabeamento").value),
+      materiaisEletricos: parseFloat(
+        document.getElementById("materiaisEletricos").value
+      ),
+      padrao: parseFloat(document.getElementById("padrao").value),
+      materiaisDiversos: parseFloat(
+        document.getElementById("materiaisDiversos").value
+      ),
     };
 
     // Parcelamento dos custos adicionais
@@ -165,11 +187,80 @@ class ProjetoUsinaSolar {
     this.atualizarValoresCalculados();
   }
 
+  calcularSubtotaisCustosAdicionais() {
+    // Calcular subtotal Mão de Obra Civil
+    const construcao =
+      parseFloat(document.getElementById("construcao").value) || 0;
+    const preparacaoTerreno =
+      parseFloat(document.getElementById("preparacaoTerreno").value) || 0;
+    const fundamentos =
+      parseFloat(document.getElementById("fundamentos").value) || 0;
+    const alvenaria =
+      parseFloat(document.getElementById("alvenaria").value) || 0;
+    const subtotalCivil =
+      construcao + preparacaoTerreno + fundamentos + alvenaria;
+
+    document.getElementById("subtotalMaoObraCivil").textContent =
+      this.formatarMoeda(subtotalCivil);
+    document.getElementById("resumoMaoObraCivil").textContent =
+      this.formatarMoeda(subtotalCivil);
+
+    // Calcular subtotal Mão de Obra Elétrica (apenas 3 campos)
+    const instalacaoPaineis =
+      parseFloat(document.getElementById("instalacaoPaineis").value) || 0;
+    const instalacaoPadrao =
+      parseFloat(document.getElementById("instalacaoPadrao").value) || 0;
+    const instalacaoMesa =
+      parseFloat(document.getElementById("instalacaoMesa").value) || 0;
+    const subtotalEletrica =
+      instalacaoPaineis + instalacaoPadrao + instalacaoMesa;
+
+    document.getElementById("subtotalMaoObraEletrica").textContent =
+      this.formatarMoeda(subtotalEletrica);
+    document.getElementById("resumoMaoObraEletrica").textContent =
+      this.formatarMoeda(subtotalEletrica);
+
+    // Calcular subtotal Materiais
+    const postes = parseFloat(document.getElementById("postes").value) || 0;
+    const cabeamento =
+      parseFloat(document.getElementById("cabeamento").value) || 0;
+    const materiaisEletricos =
+      parseFloat(document.getElementById("materiaisEletricos").value) || 0;
+    const padrao = parseFloat(document.getElementById("padrao").value) || 0;
+    const materiaisDiversos =
+      parseFloat(document.getElementById("materiaisDiversos").value) || 0;
+    const subtotalMateriais =
+      postes + cabeamento + materiaisEletricos + padrao + materiaisDiversos;
+
+    document.getElementById("subtotalMateriais").textContent =
+      this.formatarMoeda(subtotalMateriais);
+    document.getElementById("resumoMateriais").textContent =
+      this.formatarMoeda(subtotalMateriais);
+
+    return {
+      subtotalCivil,
+      subtotalEletrica,
+      subtotalMateriais,
+      total: subtotalCivil + subtotalEletrica + subtotalMateriais,
+    };
+  }
+
   calcularCustosAdicionais() {
-    return Object.values(this.custosAdicionais).reduce(
-      (sum, val) => sum + val,
-      0
-    );
+    const subtotais = this.calcularSubtotaisCustosAdicionais();
+
+    // Atualizar o valor total no campo de resumo
+    document.getElementById("valorTotalSistema").textContent =
+      this.formatarMoeda(subtotais.total);
+
+    // Calcular e atualizar a parcela mensal
+    const parcelamento =
+      parseInt(document.getElementById("parcelamentoCustosAdicionais").value) ||
+      1;
+    const parcelaMensal = subtotais.total / parcelamento;
+    document.getElementById("parcelaMensalCustosAdicionais").textContent =
+      this.formatarMoeda(parcelaMensal);
+
+    return subtotais.total;
   }
 
   calcularCustosIniciais() {
@@ -888,22 +979,8 @@ function toggleMetodoPagamento() {
 }
 
 function calcularCustosAdicionais() {
-  const construcao =
-    parseFloat(document.getElementById("construcao").value) || 0;
-  const postes = parseFloat(document.getElementById("postes").value) || 0;
-  const padrao = parseFloat(document.getElementById("padrao").value) || 0;
-  const instalacaoEletrica =
-    parseFloat(document.getElementById("instalacaoEletrica").value) || 0;
-  const cabeamento =
-    parseFloat(document.getElementById("cabeamento").value) || 0;
-
-  const valorTotal =
-    construcao + postes + padrao + instalacaoEletrica + cabeamento;
-
-  // Atualizar o campo de valor total dos custos adicionais
-  document.getElementById("valorTotalSistema").textContent =
-    projeto.formatarMoeda(valorTotal);
-
+  projeto.calcularSubtotaisCustosAdicionais();
+  const valorTotal = projeto.calcularCustosAdicionais();
   return valorTotal;
 }
 
@@ -1000,12 +1077,12 @@ function toggleConfig() {
 function resetarValores() {
   if (confirm("Deseja resetar todos os valores para os padrões originais?")) {
     document.getElementById("tarifaInicial").value = "0.93";
-    document.getElementById("producaoMensal").value = "6000";
+    document.getElementById("producaoMensal").value = "10000";
     document.getElementById("reajusteTarifa").value = "10";
     document.getElementById("periodoAnalise").value = "300";
 
     document.getElementById("custoOperacional1").value = "20";
-    document.getElementById("custoOperacional2").value = "12.5";
+    document.getElementById("custoOperacional2").value = "0";
     document.getElementById("imposto").value = "6";
 
     // Resetar método de pagamento do sistema (cartão como default)
@@ -1013,17 +1090,29 @@ function resetarValores() {
     document.getElementById("carenciaSistema").value = "12";
     document.getElementById("numeroParcelasSistema").value = "60";
     document.getElementById("valorParcelaSistema").value = "3493.08";
-    document.getElementById("parcelasCartao").value = "12";
+    document.getElementById("parcelasCartao").value = "21";
     document.getElementById("numeroParticipantes").value = "5";
-    document.getElementById("valorPorParticipante").value = "838.34";
+    document.getElementById("valorPorParticipante").value = "628.57";
     document.getElementById("mesesAntesProducao").value = "3";
 
-    // Resetar custos adicionais com novos valores
-    document.getElementById("construcao").value = "17000";
-    document.getElementById("postes").value = "1200";
-    document.getElementById("padrao").value = "800";
-    document.getElementById("instalacaoEletrica").value = "12600";
+    // Resetar Mão de Obra Civil
+    document.getElementById("construcao").value = "12000";
+    document.getElementById("preparacaoTerreno").value = "5000";
+    document.getElementById("fundamentos").value = "3000";
+    document.getElementById("alvenaria").value = "4000";
+
+    // Resetar Mão de Obra Elétrica (apenas 3 campos)
+    document.getElementById("instalacaoPaineis").value = "9520";
+    document.getElementById("instalacaoPadrao").value = "0";
+    document.getElementById("instalacaoMesa").value = "0";
+
+    // Resetar Materiais de Construção
+    document.getElementById("postes").value = "3000";
     document.getElementById("cabeamento").value = "4000";
+    document.getElementById("materiaisEletricos").value = "2500";
+    document.getElementById("padrao").value = "1500";
+    document.getElementById("materiaisDiversos").value = "1000";
+    document.getElementById("parcelamentoCustosAdicionais").value = "10";
 
     // Resetar financiamento do terreno (valores zero)
     document.getElementById("financiarTerreno").checked = false;
@@ -1038,7 +1127,7 @@ function resetarValores() {
     document.getElementById("refletores").value = "200";
     document.getElementById("cameras").value = "800";
     document.getElementById("irrigacao").value = "500";
-    document.getElementById("parcelamentoCustosIniciais").value = "1";
+    document.getElementById("parcelamentoCustosIniciais").value = "10";
 
     document.getElementById("internet").value = "100";
     document.getElementById("taxaIluminacao").value = "100";
@@ -1049,6 +1138,12 @@ function resetarValores() {
     // Chamar toggle para atualizar a interface
     toggleMetodoPagamento();
     toggleFinanciamentoTerreno();
+
+    // Calcular subtotais e totais
+    projeto.calcularSubtotaisCustosAdicionais();
+    projeto.calcularCustosAdicionais();
+    projeto.calcularCustosIniciais();
+    projeto.atualizarValoresCalculados();
 
     calcularProjecao();
   }
@@ -1227,10 +1322,32 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Novos event listeners para custos adicionais
+  // Event listeners para Mão de Obra Civil
   document
     .querySelectorAll(
-      "#construcao, #postes, #padrao, #instalacaoEletrica, #cabeamento, #parcelamentoCustosAdicionais"
+      "#construcao, #preparacaoTerreno, #fundamentos, #alvenaria"
+    )
+    .forEach((input) => {
+      input.addEventListener("change", function () {
+        calcularCustosAdicionais();
+        calcularProjecao();
+      });
+    });
+
+  // Event listeners para Mão de Obra Elétrica (apenas 3 campos)
+  document
+    .querySelectorAll("#instalacaoPaineis, #instalacaoPadrao, #instalacaoMesa")
+    .forEach((input) => {
+      input.addEventListener("change", function () {
+        calcularCustosAdicionais();
+        calcularProjecao();
+      });
+    });
+
+  // Event listeners para Materiais de Construção
+  document
+    .querySelectorAll(
+      "#postes, #cabeamento, #materiaisEletricos, #padrao, #materiaisDiversos, #parcelamentoCustosAdicionais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
@@ -1242,6 +1359,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // Inicializar o estado dos campos
   toggleMetodoPagamento();
   toggleFinanciamentoTerreno();
+
+  // Calcular valores iniciais
+  projeto.calcularSubtotaisCustosAdicionais();
+  projeto.calcularCustosAdicionais();
+  projeto.atualizarValoresCalculados();
 
   // Calcular projeção inicial
   calcularProjecao();
