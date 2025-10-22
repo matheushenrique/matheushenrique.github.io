@@ -1075,7 +1075,7 @@ function resetarValores() {
 
     // Resetar Mão de Obra Civil
     document.getElementById("construcao").value = "10000";
-    document.getElementById("preparacaoTerreno").value = "500";
+    document.getElementById("preparacaoTerreno").value = "0";
     document.getElementById("cercamento").value = "4700";
 
     // Resetar Mão de Obra Elétrica
