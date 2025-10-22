@@ -810,8 +810,12 @@
                         <input type="number" id="alvenaria" value="4000" step="100" min="0" max="50000">
                     </div>
                     <div class="input-row">
+                        <label>Cercamento (R$):</label>
+                        <input type="number" id="cercamento" value="6000" step="100" min="0" max="100000">
+                    </div>
+                    <div class="input-row">
                         <label>Subtotal Mão de Obra Civil:</label>
-                        <div class="readonly-field" id="subtotalMaoObraCivil">R$ 24.000,00</div>
+                        <div class="readonly-field" id="subtotalMaoObraCivil">R$ 30.000,00</div>
                     </div>
                 </div>
 
@@ -841,11 +845,7 @@
                     <h3>🧱 Materiais de Construção</h3>
                     <div class="input-row">
                         <label>Postes e Estruturas (R$):</label>
-                        <input type="number" id="postes" value="3000" step="100" min="0" max="30000">
-                    </div>
-                    <div class="input-row">
-                        <label>Cercamento (R$):</label>
-                        <input type="number" id="cercamento" value="6000" step="100" min="0" max="100000">
+                        <input type="number" id="postes" value="1730" step="100" min="0" max="30000">
                     </div>
                     <div class="input-row">
                         <label>Portão (R$):</label>
@@ -857,7 +857,7 @@
                     </div>
                     <div class="input-row">
                         <label>Subtotal Materiais:</label>
-                        <div class="readonly-field" id="subtotalMateriais">R$ 13.000,00</div>
+                        <div class="readonly-field" id="subtotalMateriais">R$ 5.730,00</div>
                     </div>
                 </div>
 
@@ -866,7 +866,7 @@
                     <h3>📋 Resumo dos Custos Adicionais</h3>
                     <div class="input-row">
                         <label>Total Mão de Obra Civil:</label>
-                        <div class="readonly-field" id="resumoMaoObraCivil">R$ 24.000,00</div>
+                        <div class="readonly-field" id="resumoMaoObraCivil">R$ 30.000,00</div>
                     </div>
                     <div class="input-row">
                         <label>Total Mão de Obra Elétrica:</label>
@@ -874,12 +874,12 @@
                     </div>
                     <div class="input-row">
                         <label>Total Materiais:</label>
-                        <div class="readonly-field" id="resumoMateriais">R$ 13.000,00</div>
+                        <div class="readonly-field" id="resumoMateriais">R$ 5.730,00</div>
                     </div>
                     <div class="input-row" style="border-top: 2px solid #3498db; margin-top: 10px; padding-top: 10px;">
                         <label style="font-weight: bold;">Total dos Custos Adicionais:</label>
                         <div class="readonly-field" style="font-weight: bold; color: #2c3e50;" id="valorTotalSistema">R$
-                            46.520,00</div>
+                            45.250,00</div>
                     </div>
                     <div class="input-row">
                         <label>Parcelamento (vezes):</label>
@@ -887,43 +887,36 @@
                     </div>
                     <div class="input-row">
                         <label>Valor da Parcela (R$):</label>
-                        <div class="readonly-field" id="parcelaMensalCustosAdicionais">R$ 4.652,00</div>
+                        <div class="readonly-field" id="parcelaMensalCustosAdicionais">R$ 4.525,00</div>
                     </div>
                 </div>
 
                 <!-- Grupo 8: Financiamento do Terreno -->
                 <div class="config-group">
                     <h3>🏞️ Financiamento do Terreno</h3>
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="financiarTerreno" onchange="toggleFinanciamentoTerreno()">
-                        <label for="financiarTerreno" style="font-weight: 600;">Financiar o terreno</label>
+                    <div class="input-row">
+                        <label>Valor de Entrada (R$):</label>
+                        <input type="number" id="entradaTerreno" value="0" step="100" min="0" max="100000"
+                            onchange="calcularValorTerreno()">
                     </div>
-
-                    <div id="camposTerreno" class="conditional-fields" style="display: none;">
-                        <div class="input-row">
-                            <label>Valor de Entrada (R$):</label>
-                            <input type="number" id="entradaTerreno" value="0" step="100" min="0" max="100000"
-                                onchange="calcularValorTerreno()">
-                        </div>
-                        <div class="input-row">
-                            <label>Carência (meses):</label>
-                            <input type="number" id="carenciaTerreno" value="0" step="1" min="0" max="60"
-                                onchange="calcularProjecao()">
-                        </div>
-                        <div class="input-row">
-                            <label>Número de Parcelas:</label>
-                            <input type="number" id="numeroParcelasTerreno" value="0" step="1" min="0" max="144"
-                                onchange="calcularValorTerreno()">
-                        </div>
-                        <div class="input-row">
-                            <label>Valor da Parcela (R$):</label>
-                            <input type="number" id="valorParcelaTerreno" value="0" step="0.01" min="0" max="10000"
-                                onchange="calcularValorTerreno()">
-                        </div>
-                        <div class="input-row">
-                            <label>Valor Total do Terreno (R$):</label>
-                            <div class="readonly-field" id="valorTerrenoCalculado">R$ 0,00</div>
-                        </div>
+                    <div class="input-row">
+                        <label>Carência (meses):</label>
+                        <input type="number" id="carenciaTerreno" value="0" step="1" min="0" max="60"
+                            onchange="calcularProjecao()">
+                    </div>
+                    <div class="input-row">
+                        <label>Número de Parcelas:</label>
+                        <input type="number" id="numeroParcelasTerreno" value="120" step="1" min="0" max="144"
+                            onchange="calcularValorTerreno()">
+                    </div>
+                    <div class="input-row">
+                        <label>Valor da Parcela (R$):</label>
+                        <input type="number" id="valorParcelaTerreno" value="450" step="0.01" min="0" max="10000"
+                            onchange="calcularValorTerreno()">
+                    </div>
+                    <div class="input-row">
+                        <label>Valor Total do Terreno (R$):</label>
+                        <div class="readonly-field" id="valorTerrenoCalculado">R$ 54.000,00</div>
                     </div>
                 </div>
 
@@ -1003,9 +996,9 @@
                 <div class="value" id="roi">0%</div>
                 <div class="subtitle">Retorno sobre investimento</div>
             </div>
-            <div class="card terreno" id="cardTerreno" style="display: none;">
+            <div class="card terreno">
                 <h3>🏞️ Parcela do Terreno</h3>
-                <div class="value" id="parcelaTerreno">R$ 0,00</div>
+                <div class="value" id="parcelaTerreno">R$ 450,00</div>
                 <div class="subtitle">Parcela mensal do terreno</div>
             </div>
             <div class="card cartao" id="cardCartao">
@@ -1065,7 +1058,7 @@
                             <th>Custos Iniciais (R$)</th>
                             <th>Custos Adicionais (R$)</th>
                             <th>Parcela Sistema (R$)</th>
-                            <th id="thParcelaTerreno" style="display: none;">Parcela Terreno (R$)</th>
+                            <th>Parcela Terreno (R$)</th>
                             <th>Rend. Bruto (R$)</th>
                             <th>Imposto (R$)</th>
                             <th>Lucro Líq. (R$)</th>

@@ -36,13 +36,14 @@ class ProjetoUsinaSolar {
 
     // Custos adicionais - agora separados por módulos
     this.custosAdicionais = {
-      // Mão de Obra Civil
+      // Mão de Obra Civil (agora com cercamento)
       construcao: parseFloat(document.getElementById("construcao").value),
       preparacaoTerreno: parseFloat(
         document.getElementById("preparacaoTerreno").value
       ),
       fundamentos: parseFloat(document.getElementById("fundamentos").value),
       alvenaria: parseFloat(document.getElementById("alvenaria").value),
+      cercamento: parseFloat(document.getElementById("cercamento").value),
 
       // Mão de Obra Elétrica (apenas 3 campos)
       instalacaoPaineis: parseFloat(
@@ -55,9 +56,8 @@ class ProjetoUsinaSolar {
         document.getElementById("instalacaoMesa").value
       ),
 
-      // Materiais (agora com cercamento e portão)
+      // Materiais (sem cercamento)
       postes: parseFloat(document.getElementById("postes").value),
-      cercamento: parseFloat(document.getElementById("cercamento").value),
       portao: parseFloat(document.getElementById("portao").value),
       materiaisDiversos: parseFloat(
         document.getElementById("materiaisDiversos").value
@@ -131,8 +131,8 @@ class ProjetoUsinaSolar {
         this.valorPorParticipante * this.numeroParticipantes;
     }
 
-    // Financiamento do terreno (opcional)
-    this.financiarTerreno = document.getElementById("financiarTerreno").checked;
+    // Financiamento do terreno (agora sempre ativo)
+    this.financiarTerreno = true;
 
     // Capturar valor de entrada
     this.entradaTerreno =
@@ -149,7 +149,7 @@ class ProjetoUsinaSolar {
     this.mesesCarenciaTerreno =
       parseInt(document.getElementById("carenciaTerreno").value) || 0;
 
-    // Custos iniciais (agora sem cercamento e portão, mas com instalação hidráulica)
+    // Custos iniciais
     this.investimentoInicial = {
       refletores: parseFloat(document.getElementById("refletores").value),
       cameras: parseFloat(document.getElementById("cameras").value),
@@ -186,7 +186,7 @@ class ProjetoUsinaSolar {
   }
 
   calcularSubtotaisCustosAdicionais() {
-    // Calcular subtotal Mão de Obra Civil
+    // Calcular subtotal Mão de Obra Civil (agora com cercamento)
     const construcao =
       parseFloat(document.getElementById("construcao").value) || 0;
     const preparacaoTerreno =
@@ -195,8 +195,10 @@ class ProjetoUsinaSolar {
       parseFloat(document.getElementById("fundamentos").value) || 0;
     const alvenaria =
       parseFloat(document.getElementById("alvenaria").value) || 0;
+    const cercamento =
+      parseFloat(document.getElementById("cercamento").value) || 0;
     const subtotalCivil =
-      construcao + preparacaoTerreno + fundamentos + alvenaria;
+      construcao + preparacaoTerreno + fundamentos + alvenaria + cercamento;
 
     document.getElementById("subtotalMaoObraCivil").textContent =
       this.formatarMoeda(subtotalCivil);
@@ -218,14 +220,12 @@ class ProjetoUsinaSolar {
     document.getElementById("resumoMaoObraEletrica").textContent =
       this.formatarMoeda(subtotalEletrica);
 
-    // Calcular subtotal Materiais (agora com cercamento e portão)
+    // Calcular subtotal Materiais (sem cercamento)
     const postes = parseFloat(document.getElementById("postes").value) || 0;
-    const cercamento =
-      parseFloat(document.getElementById("cercamento").value) || 0;
     const portao = parseFloat(document.getElementById("portao").value) || 0;
     const materiaisDiversos =
       parseFloat(document.getElementById("materiaisDiversos").value) || 0;
-    const subtotalMateriais = postes + cercamento + portao + materiaisDiversos;
+    const subtotalMateriais = postes + portao + materiaisDiversos;
 
     document.getElementById("subtotalMateriais").textContent =
       this.formatarMoeda(subtotalMateriais);
@@ -343,6 +343,12 @@ class ProjetoUsinaSolar {
       this.valorTotalCustosIniciais / this.parcelamentoCustosIniciais;
     parcelaMensalCustosIniciaisElement.textContent =
       this.formatarMoeda(parcelaMensal);
+
+    // Atualizar parcela do terreno no card
+    const parcelaTerrenoElement = document.getElementById("parcelaTerreno");
+    parcelaTerrenoElement.textContent = this.formatarMoeda(
+      this.valorParcelaTerreno
+    );
   }
 
   calcularProjecaoMensal() {
@@ -412,7 +418,7 @@ class ProjetoUsinaSolar {
       const custoOperacionalMensal =
         receitaBrutaMensal * this.custoOperacionalPercentual;
 
-      // Custos fixos mensais (só existem APÓS o início da produção)
+      // Custos fixos mensais (sô existem APÓS o início da produção)
       let custosFixosMensais = 0;
       if (mes >= 1) {
         custosFixosMensais = this.totalCustosMensaisBase;
@@ -686,13 +692,9 @@ class ProjetoUsinaSolar {
                 <td class="${
                   dado.parcelaSistema > 0 ? "negative" : "neutral"
                 }">${this.formatarMoeda(dado.parcelaSistema)}</td>
-                ${
-                  this.financiarTerreno
-                    ? `<td class="${
-                        dado.parcelaTerreno > 0 ? "negative" : "neutral"
-                      }">${this.formatarMoeda(dado.parcelaTerreno)}</td>`
-                    : ""
-                }
+                <td class="${
+                  dado.parcelaTerreno > 0 ? "negative" : "neutral"
+                }">${this.formatarMoeda(dado.parcelaTerreno)}</td>
                 <td class="${
                   dado.rendimentoBruto >= 0 ? "positive" : "negative"
                 }">${this.formatarMoeda(dado.rendimentoBruto)}</td>
@@ -1025,25 +1027,6 @@ function calcularValorTerreno() {
   calcularProjecao();
 }
 
-function toggleFinanciamentoTerreno() {
-  const checkbox = document.getElementById("financiarTerreno");
-  const camposTerreno = document.getElementById("camposTerreno");
-  const cardTerreno = document.getElementById("cardTerreno");
-  const thParcelaTerreno = document.getElementById("thParcelaTerreno");
-
-  if (checkbox.checked) {
-    camposTerreno.style.display = "block";
-    cardTerreno.style.display = "block";
-    thParcelaTerreno.style.display = "table-cell";
-  } else {
-    camposTerreno.style.display = "none";
-    cardTerreno.style.display = "none";
-    thParcelaTerreno.style.display = "none";
-  }
-
-  calcularProjecao();
-}
-
 function mudarPagina(direcao) {
   const totalPaginas = Math.ceil(
     projeto.dadosMensais.length / projeto.itensPorPagina
@@ -1090,32 +1073,31 @@ function resetarValores() {
     document.getElementById("valorPorParticipante").value = "1211.26";
     document.getElementById("mesesAntesProducao").value = "3";
 
-    // Resetar Mão de Obra Civil
+    // Resetar Mão de Obra Civil (agora com cercamento)
     document.getElementById("construcao").value = "12000";
     document.getElementById("preparacaoTerreno").value = "5000";
     document.getElementById("fundamentos").value = "3000";
     document.getElementById("alvenaria").value = "4000";
+    document.getElementById("cercamento").value = "6000";
 
     // Resetar Mão de Obra Elétrica (apenas 3 campos)
     document.getElementById("instalacaoPaineis").value = "9520";
     document.getElementById("instalacaoPadrao").value = "0";
     document.getElementById("instalacaoMesa").value = "0";
 
-    // Resetar Materiais de Construção (agora com cercamento e portão)
-    document.getElementById("postes").value = "3000";
-    document.getElementById("cercamento").value = "6000";
+    // Resetar Materiais de Construção (sem cercamento)
+    document.getElementById("postes").value = "1730";
     document.getElementById("portao").value = "3000";
     document.getElementById("materiaisDiversos").value = "1000";
     document.getElementById("parcelamentoCustosAdicionais").value = "10";
 
-    // Resetar financiamento do terreno (valores zero)
-    document.getElementById("financiarTerreno").checked = false;
+    // Resetar financiamento do terreno (valores atualizados)
     document.getElementById("entradaTerreno").value = "0";
     document.getElementById("carenciaTerreno").value = "0";
-    document.getElementById("numeroParcelasTerreno").value = "0";
-    document.getElementById("valorParcelaTerreno").value = "0";
+    document.getElementById("numeroParcelasTerreno").value = "120";
+    document.getElementById("valorParcelaTerreno").value = "450";
 
-    // Resetar custos iniciais (agora sem cercamento e portão, mas com instalação hidráulica)
+    // Resetar custos iniciais
     document.getElementById("refletores").value = "200";
     document.getElementById("cameras").value = "800";
     document.getElementById("irrigacao").value = "500";
@@ -1130,7 +1112,6 @@ function resetarValores() {
 
     // Chamar toggle para atualizar a interface
     toggleMetodoPagamento();
-    toggleFinanciamentoTerreno();
 
     // Calcular subtotais e totais
     projeto.calcularSubtotaisCustosAdicionais();
@@ -1302,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("carenciaTerreno")
     .addEventListener("change", calcularProjecao);
 
-  // Configurar eventos para custos iniciais (agora com instalação hidráulica)
+  // Configurar eventos para custos iniciais
   document
     .querySelectorAll(
       "#refletores, #cameras, #irrigacao, #instalacaoHidraulica, #parcelamentoCustosIniciais"
@@ -1315,10 +1296,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Mão de Obra Civil
+  // Event listeners para Mão de Obra Civil (agora com cercamento)
   document
     .querySelectorAll(
-      "#construcao, #preparacaoTerreno, #fundamentos, #alvenaria"
+      "#construcao, #preparacaoTerreno, #fundamentos, #alvenaria, #cercamento"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
@@ -1337,10 +1318,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Materiais de Construção (agora com cercamento e portão)
+  // Event listeners para Materiais de Construção (sem cercamento)
   document
     .querySelectorAll(
-      "#postes, #cercamento, #portao, #materiaisDiversos, #parcelamentoCustosAdicionais"
+      "#postes, #portao, #materiaisDiversos, #parcelamentoCustosAdicionais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
@@ -1351,7 +1332,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Inicializar o estado dos campos
   toggleMetodoPagamento();
-  toggleFinanciamentoTerreno();
 
   // Calcular valores iniciais
   projeto.calcularSubtotaisCustosAdicionais();
