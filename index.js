@@ -149,11 +149,14 @@ class ProjetoUsinaSolar {
     this.mesesCarenciaTerreno =
       parseInt(document.getElementById("carenciaTerreno").value) || 0;
 
-    // Custos iniciais (agora sem cercamento e portão)
+    // Custos iniciais (agora sem cercamento e portão, mas com instalação hidráulica)
     this.investimentoInicial = {
       refletores: parseFloat(document.getElementById("refletores").value),
       cameras: parseFloat(document.getElementById("cameras").value),
       irrigacao: parseFloat(document.getElementById("irrigacao").value),
+      instalacaoHidraulica: parseFloat(
+        document.getElementById("instalacaoHidraulica").value
+      ),
     };
 
     // Parcelamento dos custos iniciais
@@ -1112,10 +1115,11 @@ function resetarValores() {
     document.getElementById("numeroParcelasTerreno").value = "0";
     document.getElementById("valorParcelaTerreno").value = "0";
 
-    // Resetar custos iniciais (agora sem cercamento e portão)
+    // Resetar custos iniciais (agora sem cercamento e portão, mas com instalação hidráulica)
     document.getElementById("refletores").value = "200";
     document.getElementById("cameras").value = "800";
     document.getElementById("irrigacao").value = "500";
+    document.getElementById("instalacaoHidraulica").value = "450";
     document.getElementById("parcelamentoCustosIniciais").value = "10";
 
     document.getElementById("internet").value = "100";
@@ -1298,10 +1302,10 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("carenciaTerreno")
     .addEventListener("change", calcularProjecao);
 
-  // Configurar eventos para custos iniciais (agora sem cercamento e portão)
+  // Configurar eventos para custos iniciais (agora com instalação hidráulica)
   document
     .querySelectorAll(
-      "#refletores, #cameras, #irrigacao, #parcelamentoCustosIniciais"
+      "#refletores, #cameras, #irrigacao, #instalacaoHidraulica, #parcelamentoCustosIniciais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
