@@ -36,16 +36,14 @@ class ProjetoUsinaSolar {
 
     // Custos adicionais - agora separados por módulos
     this.custosAdicionais = {
-      // Mão de Obra Civil (agora com cercamento)
+      // Mão de Obra Civil (MODIFICADO)
       construcao: parseFloat(document.getElementById("construcao").value),
       preparacaoTerreno: parseFloat(
         document.getElementById("preparacaoTerreno").value
       ),
-      fundamentos: parseFloat(document.getElementById("fundamentos").value),
-      alvenaria: parseFloat(document.getElementById("alvenaria").value),
       cercamento: parseFloat(document.getElementById("cercamento").value),
 
-      // Mão de Obra Elétrica (apenas 3 campos)
+      // Mão de Obra Elétrica
       instalacaoPaineis: parseFloat(
         document.getElementById("instalacaoPaineis").value
       ),
@@ -56,7 +54,8 @@ class ProjetoUsinaSolar {
         document.getElementById("instalacaoMesa").value
       ),
 
-      // Materiais (sem cercamento)
+      // Materiais (MODIFICADO - alvenaria movida para cá)
+      alvenaria: parseFloat(document.getElementById("alvenaria").value),
       postes: parseFloat(document.getElementById("postes").value),
       portao: parseFloat(document.getElementById("portao").value),
       materiaisDiversos: parseFloat(
@@ -186,26 +185,21 @@ class ProjetoUsinaSolar {
   }
 
   calcularSubtotaisCustosAdicionais() {
-    // Calcular subtotal Mão de Obra Civil (agora com cercamento)
+    // Calcular subtotal Mão de Obra Civil (MODIFICADO)
     const construcao =
       parseFloat(document.getElementById("construcao").value) || 0;
     const preparacaoTerreno =
       parseFloat(document.getElementById("preparacaoTerreno").value) || 0;
-    const fundamentos =
-      parseFloat(document.getElementById("fundamentos").value) || 0;
-    const alvenaria =
-      parseFloat(document.getElementById("alvenaria").value) || 0;
     const cercamento =
       parseFloat(document.getElementById("cercamento").value) || 0;
-    const subtotalCivil =
-      construcao + preparacaoTerreno + fundamentos + alvenaria + cercamento;
+    const subtotalCivil = construcao + preparacaoTerreno + cercamento;
 
     document.getElementById("subtotalMaoObraCivil").textContent =
       this.formatarMoeda(subtotalCivil);
     document.getElementById("resumoMaoObraCivil").textContent =
       this.formatarMoeda(subtotalCivil);
 
-    // Calcular subtotal Mão de Obra Elétrica (apenas 3 campos)
+    // Calcular subtotal Mão de Obra Elétrica
     const instalacaoPaineis =
       parseFloat(document.getElementById("instalacaoPaineis").value) || 0;
     const instalacaoPadrao =
@@ -220,12 +214,14 @@ class ProjetoUsinaSolar {
     document.getElementById("resumoMaoObraEletrica").textContent =
       this.formatarMoeda(subtotalEletrica);
 
-    // Calcular subtotal Materiais (sem cercamento)
+    // Calcular subtotal Materiais (MODIFICADO - alvenaria movida para cá)
+    const alvenaria =
+      parseFloat(document.getElementById("alvenaria").value) || 0;
     const postes = parseFloat(document.getElementById("postes").value) || 0;
     const portao = parseFloat(document.getElementById("portao").value) || 0;
     const materiaisDiversos =
       parseFloat(document.getElementById("materiaisDiversos").value) || 0;
-    const subtotalMateriais = postes + portao + materiaisDiversos;
+    const subtotalMateriais = alvenaria + postes + portao + materiaisDiversos;
 
     document.getElementById("subtotalMateriais").textContent =
       this.formatarMoeda(subtotalMateriais);
@@ -1073,25 +1069,24 @@ function resetarValores() {
     document.getElementById("valorPorParticipante").value = "1211.26";
     document.getElementById("mesesAntesProducao").value = "3";
 
-    // Resetar Mão de Obra Civil (agora com cercamento)
+    // Resetar Mão de Obra Civil (MODIFICADO)
     document.getElementById("construcao").value = "12000";
-    document.getElementById("preparacaoTerreno").value = "5000";
-    document.getElementById("fundamentos").value = "3000";
-    document.getElementById("alvenaria").value = "4000";
-    document.getElementById("cercamento").value = "6000";
+    document.getElementById("preparacaoTerreno").value = "500";
+    document.getElementById("cercamento").value = "4700";
 
-    // Resetar Mão de Obra Elétrica (apenas 3 campos)
+    // Resetar Mão de Obra Elétrica
     document.getElementById("instalacaoPaineis").value = "9520";
     document.getElementById("instalacaoPadrao").value = "0";
     document.getElementById("instalacaoMesa").value = "0";
 
-    // Resetar Materiais de Construção (sem cercamento)
+    // Resetar Materiais de Construção (MODIFICADO)
+    document.getElementById("alvenaria").value = "4000";
     document.getElementById("postes").value = "1730";
     document.getElementById("portao").value = "3000";
     document.getElementById("materiaisDiversos").value = "1000";
     document.getElementById("parcelamentoCustosAdicionais").value = "10";
 
-    // Resetar financiamento do terreno (valores atualizados)
+    // Resetar financiamento do terreno
     document.getElementById("entradaTerreno").value = "0";
     document.getElementById("carenciaTerreno").value = "0";
     document.getElementById("numeroParcelasTerreno").value = "120";
@@ -1296,11 +1291,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Mão de Obra Civil (agora com cercamento)
+  // Event listeners para Mão de Obra Civil (MODIFICADO)
   document
-    .querySelectorAll(
-      "#construcao, #preparacaoTerreno, #fundamentos, #alvenaria, #cercamento"
-    )
+    .querySelectorAll("#construcao, #preparacaoTerreno, #cercamento")
     .forEach((input) => {
       input.addEventListener("change", function () {
         calcularCustosAdicionais();
@@ -1308,7 +1301,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Mão de Obra Elétrica (apenas 3 campos)
+  // Event listeners para Mão de Obra Elétrica
   document
     .querySelectorAll("#instalacaoPaineis, #instalacaoPadrao, #instalacaoMesa")
     .forEach((input) => {
@@ -1318,10 +1311,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Materiais de Construção (sem cercamento)
+  // Event listeners para Materiais de Construção (MODIFICADO)
   document
     .querySelectorAll(
-      "#postes, #portao, #materiaisDiversos, #parcelamentoCustosAdicionais"
+      "#alvenaria, #postes, #portao, #materiaisDiversos, #parcelamentoCustosAdicionais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
