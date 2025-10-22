@@ -790,7 +790,36 @@
                     </div>
                 </div>
 
-                <!-- Grupo 4: Mão de Obra Civil -->
+                <!-- Grupo 4: Financiamento do Terreno (MOVIDO PARA ANTES DA MÃO DE OBRA CIVIL) -->
+                <div class="config-group">
+                    <h3>🏞️ Financiamento do Terreno</h3>
+                    <div class="input-row">
+                        <label>Valor de Entrada (R$):</label>
+                        <input type="number" id="entradaTerreno" value="0" step="100" min="0" max="100000"
+                            onchange="calcularValorTerreno()">
+                    </div>
+                    <div class="input-row">
+                        <label>Carência (meses):</label>
+                        <input type="number" id="carenciaTerreno" value="0" step="1" min="0" max="60"
+                            onchange="calcularProjecao()">
+                    </div>
+                    <div class="input-row">
+                        <label>Número de Parcelas:</label>
+                        <input type="number" id="numeroParcelasTerreno" value="120" step="1" min="0" max="144"
+                            onchange="calcularValorTerreno()">
+                    </div>
+                    <div class="input-row">
+                        <label>Valor da Parcela (R$):</label>
+                        <input type="number" id="valorParcelaTerreno" value="450" step="0.01" min="0" max="10000"
+                            onchange="calcularValorTerreno()">
+                    </div>
+                    <div class="input-row">
+                        <label>Valor Total do Terreno (R$):</label>
+                        <div class="readonly-field" id="valorTerrenoCalculado">R$ 54.000,00</div>
+                    </div>
+                </div>
+
+                <!-- Grupo 5: Mão de Obra Civil (ANTIGO GRUPO 4) -->
                 <div class="config-group">
                     <h3>🏗️ Mão de Obra Civil</h3>
                     <div class="input-row">
@@ -811,7 +840,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 5: Mão de Obra Elétrica -->
+                <!-- Grupo 6: Mão de Obra Elétrica -->
                 <div class="config-group">
                     <h3>⚡ Mão de Obra Elétrica</h3>
                     <div class="input-row">
@@ -832,7 +861,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 6: Materiais de Construção -->
+                <!-- Grupo 7: Materiais de Construção -->
                 <div class="config-group">
                     <h3>🧱 Materiais de Construção</h3>
                     <div class="input-row">
@@ -861,7 +890,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 7: Resumo dos Custos Adicionais -->
+                <!-- Grupo 8: Resumo dos Custos Adicionais -->
                 <div class="config-group">
                     <h3>📋 Resumo dos Custos Adicionais</h3>
                     <div class="input-row">
@@ -888,35 +917,6 @@
                     <div class="input-row">
                         <label>Valor da Parcela (R$):</label>
                         <div class="readonly-field" id="parcelaMensalCustosAdicionais">R$ 3.379,00</div>
-                    </div>
-                </div>
-
-                <!-- Grupo 8: Financiamento do Terreno -->
-                <div class="config-group">
-                    <h3>🏞️ Financiamento do Terreno</h3>
-                    <div class="input-row">
-                        <label>Valor de Entrada (R$):</label>
-                        <input type="number" id="entradaTerreno" value="0" step="100" min="0" max="100000"
-                            onchange="calcularValorTerreno()">
-                    </div>
-                    <div class="input-row">
-                        <label>Carência (meses):</label>
-                        <input type="number" id="carenciaTerreno" value="0" step="1" min="0" max="60"
-                            onchange="calcularProjecao()">
-                    </div>
-                    <div class="input-row">
-                        <label>Número de Parcelas:</label>
-                        <input type="number" id="numeroParcelasTerreno" value="120" step="1" min="0" max="144"
-                            onchange="calcularValorTerreno()">
-                    </div>
-                    <div class="input-row">
-                        <label>Valor da Parcela (R$):</label>
-                        <input type="number" id="valorParcelaTerreno" value="450" step="0.01" min="0" max="10000"
-                            onchange="calcularValorTerreno()">
-                    </div>
-                    <div class="input-row">
-                        <label>Valor Total do Terreno (R$):</label>
-                        <div class="readonly-field" id="valorTerrenoCalculado">R$ 54.000,00</div>
                     </div>
                 </div>
 
