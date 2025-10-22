@@ -396,11 +396,11 @@ class ProjetoUsinaSolar {
       const ano = mes <= 0 ? 0 : Math.ceil(mes / 12);
       const mesNoAno = mes <= 0 ? mes : ((mes - 1) % 12) + 1;
 
-      // Calcula tarifa com reajuste anual (sô aplica após início da produção)
-      const anosDecorridos = mes < 1 ? 0 : (mes - 1) / 12;
+      // MODIFICAÇÃO: Calcula tarifa com reajuste anual (a cada 12 meses)
+      // O reajuste ocorre no início de cada ano (após 12 meses completos)
+      const anoAtual = mes < 1 ? 0 : Math.floor((mes - 1) / 12);
       const tarifa =
-        this.tarifaInicial *
-        Math.pow(1 + this.reajusteTarifaAnual, anosDecorridos);
+        this.tarifaInicial * Math.pow(1 + this.reajusteTarifaAnual, anoAtual);
 
       // Receita bruta mensal (ZERO durante meses anteriores à produção)
       let receitaBrutaMensal = 0;
@@ -1110,7 +1110,7 @@ function resetarValores() {
     document.getElementById("monitoramento").value = "100";
     document.getElementById("seguro").value = "150";
     document.getElementById("agua").value = "50";
-    document.getElementById("contadora").value = "300";
+    document.getElementById("contadora").value = "400"; // ALTERADO: de 300 para 400
 
     // Chamar toggle para atualizar a interface
     toggleMetodoPagamento();
