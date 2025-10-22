@@ -1086,7 +1086,7 @@ function resetarValores() {
     // Resetar Materiais de Construção
     document.getElementById("alvenaria").value = "4000";
     document.getElementById("postes").value = "1730";
-    document.getElementById("portao").value = "3000";
+    document.getElementById("portao").value = "2000";
     document.getElementById("estacas").value = "840";
     document.getElementById("materiaisDiversos").value = "1000";
     document.getElementById("parcelamentoCustosAdicionais").value = "10";
@@ -1110,7 +1110,7 @@ function resetarValores() {
     document.getElementById("monitoramento").value = "100";
     document.getElementById("seguro").value = "150";
     document.getElementById("agua").value = "50";
-    document.getElementById("contadora").value = "400"; // ALTERADO: de 300 para 400
+    document.getElementById("contadora").value = "400";
 
     // Chamar toggle para atualizar a interface
     toggleMetodoPagamento();
