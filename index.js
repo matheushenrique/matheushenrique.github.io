@@ -55,13 +55,10 @@ class ProjetoUsinaSolar {
         document.getElementById("instalacaoMesa").value
       ),
 
-      // Materiais
+      // Materiais (agora com cercamento e portão)
       postes: parseFloat(document.getElementById("postes").value),
-      cabeamento: parseFloat(document.getElementById("cabeamento").value),
-      materiaisEletricos: parseFloat(
-        document.getElementById("materiaisEletricos").value
-      ),
-      padrao: parseFloat(document.getElementById("padrao").value),
+      cercamento: parseFloat(document.getElementById("cercamento").value),
+      portao: parseFloat(document.getElementById("portao").value),
       materiaisDiversos: parseFloat(
         document.getElementById("materiaisDiversos").value
       ),
@@ -152,10 +149,8 @@ class ProjetoUsinaSolar {
     this.mesesCarenciaTerreno =
       parseInt(document.getElementById("carenciaTerreno").value) || 0;
 
-    // Custos iniciais
+    // Custos iniciais (agora sem cercamento e portão)
     this.investimentoInicial = {
-      cercamento: parseFloat(document.getElementById("cercamento").value),
-      portao: parseFloat(document.getElementById("portao").value),
       refletores: parseFloat(document.getElementById("refletores").value),
       cameras: parseFloat(document.getElementById("cameras").value),
       irrigacao: parseFloat(document.getElementById("irrigacao").value),
@@ -220,17 +215,14 @@ class ProjetoUsinaSolar {
     document.getElementById("resumoMaoObraEletrica").textContent =
       this.formatarMoeda(subtotalEletrica);
 
-    // Calcular subtotal Materiais
+    // Calcular subtotal Materiais (agora com cercamento e portão)
     const postes = parseFloat(document.getElementById("postes").value) || 0;
-    const cabeamento =
-      parseFloat(document.getElementById("cabeamento").value) || 0;
-    const materiaisEletricos =
-      parseFloat(document.getElementById("materiaisEletricos").value) || 0;
-    const padrao = parseFloat(document.getElementById("padrao").value) || 0;
+    const cercamento =
+      parseFloat(document.getElementById("cercamento").value) || 0;
+    const portao = parseFloat(document.getElementById("portao").value) || 0;
     const materiaisDiversos =
       parseFloat(document.getElementById("materiaisDiversos").value) || 0;
-    const subtotalMateriais =
-      postes + cabeamento + materiaisEletricos + padrao + materiaisDiversos;
+    const subtotalMateriais = postes + cercamento + portao + materiaisDiversos;
 
     document.getElementById("subtotalMateriais").textContent =
       this.formatarMoeda(subtotalMateriais);
@@ -395,7 +387,7 @@ class ProjetoUsinaSolar {
       const ano = mes <= 0 ? 0 : Math.ceil(mes / 12);
       const mesNoAno = mes <= 0 ? mes : ((mes - 1) % 12) + 1;
 
-      // Calcula tarifa com reajuste anual (só aplica após início da produção)
+      // Calcula tarifa com reajuste anual (sô aplica após início da produção)
       const anosDecorridos = mes < 1 ? 0 : (mes - 1) / 12;
       const tarifa =
         this.tarifaInicial *
@@ -1092,7 +1084,7 @@ function resetarValores() {
     document.getElementById("valorParcelaSistema").value = "3493.08";
     document.getElementById("parcelasCartao").value = "21";
     document.getElementById("numeroParticipantes").value = "5";
-    document.getElementById("valorPorParticipante").value = "628.57";
+    document.getElementById("valorPorParticipante").value = "1211.26";
     document.getElementById("mesesAntesProducao").value = "3";
 
     // Resetar Mão de Obra Civil
@@ -1106,11 +1098,10 @@ function resetarValores() {
     document.getElementById("instalacaoPadrao").value = "0";
     document.getElementById("instalacaoMesa").value = "0";
 
-    // Resetar Materiais de Construção
+    // Resetar Materiais de Construção (agora com cercamento e portão)
     document.getElementById("postes").value = "3000";
-    document.getElementById("cabeamento").value = "4000";
-    document.getElementById("materiaisEletricos").value = "2500";
-    document.getElementById("padrao").value = "1500";
+    document.getElementById("cercamento").value = "6000";
+    document.getElementById("portao").value = "3000";
     document.getElementById("materiaisDiversos").value = "1000";
     document.getElementById("parcelamentoCustosAdicionais").value = "10";
 
@@ -1121,9 +1112,7 @@ function resetarValores() {
     document.getElementById("numeroParcelasTerreno").value = "0";
     document.getElementById("valorParcelaTerreno").value = "0";
 
-    // Resetar custos iniciais
-    document.getElementById("cercamento").value = "6000";
-    document.getElementById("portao").value = "3000";
+    // Resetar custos iniciais (agora sem cercamento e portão)
     document.getElementById("refletores").value = "200";
     document.getElementById("cameras").value = "800";
     document.getElementById("irrigacao").value = "500";
@@ -1309,10 +1298,10 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("carenciaTerreno")
     .addEventListener("change", calcularProjecao);
 
-  // Configurar eventos para custos iniciais
+  // Configurar eventos para custos iniciais (agora sem cercamento e portão)
   document
     .querySelectorAll(
-      "#cercamento, #portao, #refletores, #cameras, #irrigacao, #parcelamentoCustosIniciais"
+      "#refletores, #cameras, #irrigacao, #parcelamentoCustosIniciais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
@@ -1344,10 +1333,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Materiais de Construção
+  // Event listeners para Materiais de Construção (agora com cercamento e portão)
   document
     .querySelectorAll(
-      "#postes, #cabeamento, #materiaisEletricos, #padrao, #materiaisDiversos, #parcelamentoCustosAdicionais"
+      "#postes, #cercamento, #portao, #materiaisDiversos, #parcelamentoCustosAdicionais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
@@ -1363,6 +1352,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Calcular valores iniciais
   projeto.calcularSubtotaisCustosAdicionais();
   projeto.calcularCustosAdicionais();
+  projeto.calcularCustosIniciais();
   projeto.atualizarValoresCalculados();
 
   // Calcular projeção inicial
