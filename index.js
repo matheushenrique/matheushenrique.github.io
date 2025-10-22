@@ -36,7 +36,7 @@ class ProjetoUsinaSolar {
 
     // Custos adicionais - agora separados por módulos
     this.custosAdicionais = {
-      // Mão de Obra Civil (MODIFICADO)
+      // Mão de Obra Civil
       construcao: parseFloat(document.getElementById("construcao").value),
       preparacaoTerreno: parseFloat(
         document.getElementById("preparacaoTerreno").value
@@ -54,10 +54,11 @@ class ProjetoUsinaSolar {
         document.getElementById("instalacaoMesa").value
       ),
 
-      // Materiais (MODIFICADO - alvenaria movida para cá)
+      // Materiais
       alvenaria: parseFloat(document.getElementById("alvenaria").value),
       postes: parseFloat(document.getElementById("postes").value),
       portao: parseFloat(document.getElementById("portao").value),
+      estacas: parseFloat(document.getElementById("estacas").value),
       materiaisDiversos: parseFloat(
         document.getElementById("materiaisDiversos").value
       ),
@@ -172,6 +173,7 @@ class ProjetoUsinaSolar {
         document.getElementById("taxaIluminacao").value
       ),
       monitoramento: parseFloat(document.getElementById("monitoramento").value),
+      seguro: parseFloat(document.getElementById("seguro").value),
       agua: parseFloat(document.getElementById("agua").value),
       contadora: parseFloat(document.getElementById("contadora").value),
     };
@@ -185,7 +187,7 @@ class ProjetoUsinaSolar {
   }
 
   calcularSubtotaisCustosAdicionais() {
-    // Calcular subtotal Mão de Obra Civil (MODIFICADO)
+    // Calcular subtotal Mão de Obra Civil
     const construcao =
       parseFloat(document.getElementById("construcao").value) || 0;
     const preparacaoTerreno =
@@ -214,14 +216,16 @@ class ProjetoUsinaSolar {
     document.getElementById("resumoMaoObraEletrica").textContent =
       this.formatarMoeda(subtotalEletrica);
 
-    // Calcular subtotal Materiais (MODIFICADO - alvenaria movida para cá)
+    // Calcular subtotal Materiais (COM ESTACAS ADICIONADO)
     const alvenaria =
       parseFloat(document.getElementById("alvenaria").value) || 0;
     const postes = parseFloat(document.getElementById("postes").value) || 0;
     const portao = parseFloat(document.getElementById("portao").value) || 0;
+    const estacas = parseFloat(document.getElementById("estacas").value) || 0;
     const materiaisDiversos =
       parseFloat(document.getElementById("materiaisDiversos").value) || 0;
-    const subtotalMateriais = alvenaria + postes + portao + materiaisDiversos;
+    const subtotalMateriais =
+      alvenaria + postes + portao + estacas + materiaisDiversos;
 
     document.getElementById("subtotalMateriais").textContent =
       this.formatarMoeda(subtotalMateriais);
@@ -1069,7 +1073,7 @@ function resetarValores() {
     document.getElementById("valorPorParticipante").value = "1211.26";
     document.getElementById("mesesAntesProducao").value = "3";
 
-    // Resetar Mão de Obra Civil (MODIFICADO)
+    // Resetar Mão de Obra Civil
     document.getElementById("construcao").value = "12000";
     document.getElementById("preparacaoTerreno").value = "500";
     document.getElementById("cercamento").value = "4700";
@@ -1079,10 +1083,11 @@ function resetarValores() {
     document.getElementById("instalacaoPadrao").value = "0";
     document.getElementById("instalacaoMesa").value = "0";
 
-    // Resetar Materiais de Construção (MODIFICADO)
+    // Resetar Materiais de Construção (COM ESTACAS ADICIONADO)
     document.getElementById("alvenaria").value = "4000";
     document.getElementById("postes").value = "1730";
     document.getElementById("portao").value = "3000";
+    document.getElementById("estacas").value = "840";
     document.getElementById("materiaisDiversos").value = "1000";
     document.getElementById("parcelamentoCustosAdicionais").value = "10";
 
@@ -1099,9 +1104,11 @@ function resetarValores() {
     document.getElementById("instalacaoHidraulica").value = "450";
     document.getElementById("parcelamentoCustosIniciais").value = "10";
 
+    // Resetar custos mensais (COM SEGURO ADICIONADO)
     document.getElementById("internet").value = "100";
     document.getElementById("taxaIluminacao").value = "100";
     document.getElementById("monitoramento").value = "100";
+    document.getElementById("seguro").value = "150";
     document.getElementById("agua").value = "50";
     document.getElementById("contadora").value = "300";
 
@@ -1291,7 +1298,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Mão de Obra Civil (MODIFICADO)
+  // Event listeners para Mão de Obra Civil
   document
     .querySelectorAll("#construcao, #preparacaoTerreno, #cercamento")
     .forEach((input) => {
@@ -1311,14 +1318,27 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Materiais de Construção (MODIFICADO)
+  // Event listeners para Materiais de Construção (COM ESTACAS ADICIONADO)
   document
     .querySelectorAll(
-      "#alvenaria, #postes, #portao, #materiaisDiversos, #parcelamentoCustosAdicionais"
+      "#alvenaria, #postes, #portao, #estacas, #materiaisDiversos, #parcelamentoCustosAdicionais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
         calcularCustosAdicionais();
+        calcularProjecao();
+      });
+    });
+
+  // Event listeners para Custos Mensais (COM SEGURO ADICIONADO)
+  document
+    .querySelectorAll(
+      "#internet, #taxaIluminacao, #monitoramento, #seguro, #agua, #contadora"
+    )
+    .forEach((input) => {
+      input.addEventListener("change", function () {
+        projeto.totalCustosMensaisBase =
+          projeto.calcularTotalCustosMensaisBase();
         calcularProjecao();
       });
     });
