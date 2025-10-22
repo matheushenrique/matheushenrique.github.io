@@ -408,15 +408,18 @@ class ProjetoUsinaSolar {
         receitaBrutaMensal = this.producaoMensalKwh * tarifa;
       }
 
-      // Imposto (sobre a receita bruta, se houver receita)
-      let imposto = 0;
-      if (receitaBrutaMensal > 0 && mes >= 1) {
-        imposto = receitaBrutaMensal * this.impostoPercentual;
-      }
-
       // Custos operacionais (percentual da receita - ZERO se não há receita)
       const custoOperacionalMensal =
         receitaBrutaMensal * this.custoOperacionalPercentual;
+
+      // MODIFICAÇÃO: Imposto (sobre a receita bruta menos custo operacional, se positivo)
+      let imposto = 0;
+      if (receitaBrutaMensal > 0 && mes >= 1) {
+        const baseCalculo = receitaBrutaMensal - custoOperacionalMensal;
+        if (baseCalculo > 0) {
+          imposto = baseCalculo * this.impostoPercentual;
+        }
+      }
 
       // Custos fixos mensais (sô existem APÓS o início da produção)
       let custosFixosMensais = 0;
@@ -488,8 +491,6 @@ class ProjetoUsinaSolar {
         parcelaCustosAdicionais -
         parcelaCustosIniciais -
         parcelaTerreno;
-
-      // Imposto (sobre o rendimento bruto, se positivo)
 
       // Lucro líquido
       const lucroLiquido = rendimentoBruto - imposto;
