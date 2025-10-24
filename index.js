@@ -151,6 +151,7 @@ class ProjetoUsinaSolar {
 
     // Custos iniciais
     this.investimentoInicial = {
+      projeto: parseFloat(document.getElementById("projeto").value),
       refletores: parseFloat(document.getElementById("refletores").value),
       cameras: parseFloat(document.getElementById("cameras").value),
       irrigacao: parseFloat(document.getElementById("irrigacao").value),
@@ -1099,6 +1100,7 @@ function resetarValores() {
     document.getElementById("valorParcelaTerreno").value = "450";
 
     // Resetar custos iniciais
+    document.getElementById("projeto").value = "280";
     document.getElementById("refletores").value = "200";
     document.getElementById("cameras").value = "800";
     document.getElementById("irrigacao").value = "0";
@@ -1289,7 +1291,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Configurar eventos para custos iniciais
   document
     .querySelectorAll(
-      "#refletores, #cameras, #irrigacao, #instalacaoHidraulica, #parcelamentoCustosIniciais"
+      "#projeto, #refletores, #cameras, #irrigacao, #instalacaoHidraulica, #parcelamentoCustosIniciais"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
