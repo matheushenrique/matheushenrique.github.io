@@ -1112,9 +1112,9 @@ function resetarValores() {
     document.getElementById("carenciaSistema").value = "12";
     document.getElementById("numeroParcelasSistema").value = "60";
     document.getElementById("valorParcelaSistema").value = "3493.08";
-    document.getElementById("parcelasCartao").value = "21";
+    document.getElementById("parcelasCartao").value = "18";
     document.getElementById("numeroParticipantes").value = "5";
-    document.getElementById("valorPorParticipante").value = "1211.26";
+    document.getElementById("valorPorParticipante").value = "818.39";
     document.getElementById("mesesAntesProducao").value = "3";
 
     // Resetar Mão de Obra Civil (ATUALIZADO)
