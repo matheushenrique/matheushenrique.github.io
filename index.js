@@ -36,12 +36,14 @@ class ProjetoUsinaSolar {
 
     // Custos adicionais - agora separados por módulos
     this.custosAdicionais = {
-      // Mão de Obra Civil
+      // Mão de Obra Civil (ATUALIZADO)
       construcao: parseFloat(document.getElementById("construcao").value),
+      fabricacaoBlocos: parseFloat(
+        document.getElementById("fabricacaoBlocos").value
+      ),
       preparacaoTerreno: parseFloat(
         document.getElementById("preparacaoTerreno").value
       ),
-      cercamento: parseFloat(document.getElementById("cercamento").value),
 
       // Mão de Obra Elétrica
       instalacaoPaineis: parseFloat(
@@ -54,13 +56,23 @@ class ProjetoUsinaSolar {
         document.getElementById("instalacaoMesa").value
       ),
 
-      // Materiais
+      // Materiais de Construção (ATUALIZADO)
       alvenaria: parseFloat(document.getElementById("alvenaria").value),
-      postes: parseFloat(document.getElementById("postes").value),
+      formasBase: parseFloat(document.getElementById("formasBase").value),
+      arame: parseFloat(document.getElementById("arame").value),
+      blocos: parseFloat(document.getElementById("blocos").value),
+      parafusos: parseFloat(document.getElementById("parafusos").value),
       portao: parseFloat(document.getElementById("portao").value),
       estacas: parseFloat(document.getElementById("estacas").value),
       materiaisDiversos: parseFloat(
         document.getElementById("materiaisDiversos").value
+      ),
+
+      // Materiais Elétricos (NOVO)
+      postes: parseFloat(document.getElementById("postes").value),
+      cabeamento: parseFloat(document.getElementById("cabeamento").value),
+      eletricoDiversos: parseFloat(
+        document.getElementById("eletricoDiversos").value
       ),
     };
 
@@ -188,14 +200,14 @@ class ProjetoUsinaSolar {
   }
 
   calcularSubtotaisCustosAdicionais() {
-    // Calcular subtotal Mão de Obra Civil
+    // Calcular subtotal Mão de Obra Civil (ATUALIZADO)
     const construcao =
       parseFloat(document.getElementById("construcao").value) || 0;
+    const fabricacaoBlocos =
+      parseFloat(document.getElementById("fabricacaoBlocos").value) || 0;
     const preparacaoTerreno =
       parseFloat(document.getElementById("preparacaoTerreno").value) || 0;
-    const cercamento =
-      parseFloat(document.getElementById("cercamento").value) || 0;
-    const subtotalCivil = construcao + preparacaoTerreno + cercamento;
+    const subtotalCivil = construcao + fabricacaoBlocos + preparacaoTerreno;
 
     document.getElementById("subtotalMaoObraCivil").textContent =
       this.formatarMoeda(subtotalCivil);
@@ -217,27 +229,57 @@ class ProjetoUsinaSolar {
     document.getElementById("resumoMaoObraEletrica").textContent =
       this.formatarMoeda(subtotalEletrica);
 
-    // Calcular subtotal Materiais
+    // Calcular subtotal Materiais de Construção (ATUALIZADO)
     const alvenaria =
       parseFloat(document.getElementById("alvenaria").value) || 0;
-    const postes = parseFloat(document.getElementById("postes").value) || 0;
+    const formasBase =
+      parseFloat(document.getElementById("formasBase").value) || 0;
+    const arame = parseFloat(document.getElementById("arame").value) || 0;
+    const blocos = parseFloat(document.getElementById("blocos").value) || 0;
+    const parafusos =
+      parseFloat(document.getElementById("parafusos").value) || 0;
     const portao = parseFloat(document.getElementById("portao").value) || 0;
     const estacas = parseFloat(document.getElementById("estacas").value) || 0;
     const materiaisDiversos =
       parseFloat(document.getElementById("materiaisDiversos").value) || 0;
     const subtotalMateriais =
-      alvenaria + postes + portao + estacas + materiaisDiversos;
+      alvenaria +
+      formasBase +
+      arame +
+      blocos +
+      parafusos +
+      portao +
+      estacas +
+      materiaisDiversos;
 
     document.getElementById("subtotalMateriais").textContent =
       this.formatarMoeda(subtotalMateriais);
     document.getElementById("resumoMateriais").textContent =
       this.formatarMoeda(subtotalMateriais);
 
+    // Calcular subtotal Materiais Elétricos (NOVO)
+    const postes = parseFloat(document.getElementById("postes").value) || 0;
+    const cabeamento =
+      parseFloat(document.getElementById("cabeamento").value) || 0;
+    const eletricoDiversos =
+      parseFloat(document.getElementById("eletricoDiversos").value) || 0;
+    const subtotalMateriaisEletricos = postes + cabeamento + eletricoDiversos;
+
+    document.getElementById("subtotalMateriaisEletricos").textContent =
+      this.formatarMoeda(subtotalMateriaisEletricos);
+    document.getElementById("resumoMateriaisEletricos").textContent =
+      this.formatarMoeda(subtotalMateriaisEletricos);
+
     return {
       subtotalCivil,
       subtotalEletrica,
       subtotalMateriais,
-      total: subtotalCivil + subtotalEletrica + subtotalMateriais,
+      subtotalMateriaisEletricos,
+      total:
+        subtotalCivil +
+        subtotalEletrica +
+        subtotalMateriais +
+        subtotalMateriaisEletricos,
     };
   }
 
@@ -1075,22 +1117,31 @@ function resetarValores() {
     document.getElementById("valorPorParticipante").value = "1211.26";
     document.getElementById("mesesAntesProducao").value = "3";
 
-    // Resetar Mão de Obra Civil
-    document.getElementById("construcao").value = "10000";
+    // Resetar Mão de Obra Civil (ATUALIZADO)
+    document.getElementById("construcao").value = "9500";
+    document.getElementById("fabricacaoBlocos").value = "3000";
     document.getElementById("preparacaoTerreno").value = "0";
-    document.getElementById("cercamento").value = "4700";
 
     // Resetar Mão de Obra Elétrica
     document.getElementById("instalacaoPaineis").value = "9520";
     document.getElementById("instalacaoPadrao").value = "0";
     document.getElementById("instalacaoMesa").value = "0";
 
-    // Resetar Materiais de Construção
-    document.getElementById("alvenaria").value = "4000";
-    document.getElementById("postes").value = "1730";
+    // Resetar Materiais de Construção (ATUALIZADO)
+    document.getElementById("alvenaria").value = "10343";
+    document.getElementById("formasBase").value = "1000";
+    document.getElementById("arame").value = "816";
+    document.getElementById("blocos").value = "5440";
+    document.getElementById("parafusos").value = "1695";
     document.getElementById("portao").value = "2000";
     document.getElementById("estacas").value = "840";
     document.getElementById("materiaisDiversos").value = "1000";
+
+    // Resetar Materiais Elétricos (NOVO)
+    document.getElementById("postes").value = "1200";
+    document.getElementById("cabeamento").value = "5000";
+    document.getElementById("eletricoDiversos").value = "10000";
+
     document.getElementById("parcelamentoCustosAdicionais").value = "10";
 
     // Resetar financiamento do terreno
@@ -1107,12 +1158,12 @@ function resetarValores() {
     document.getElementById("instalacaoHidraulica").value = "450";
     document.getElementById("parcelamentoCustosIniciais").value = "10";
 
-    // Resetar custos mensais
+    // Resetar custos mensais (ATUALIZADO - Água = 0)
     document.getElementById("internet").value = "100";
     document.getElementById("taxaIluminacao").value = "100";
     document.getElementById("monitoramento").value = "100";
     document.getElementById("seguro").value = "150";
-    document.getElementById("agua").value = "50";
+    document.getElementById("agua").value = "0";
     document.getElementById("contadora").value = "400";
 
     // Chamar toggle para atualizar a interface
@@ -1301,9 +1352,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Mão de Obra Civil
+  // Event listeners para Mão de Obra Civil (ATUALIZADO)
   document
-    .querySelectorAll("#construcao, #preparacaoTerreno, #cercamento")
+    .querySelectorAll("#construcao, #fabricacaoBlocos, #preparacaoTerreno")
     .forEach((input) => {
       input.addEventListener("change", function () {
         calcularCustosAdicionais();
@@ -1321,11 +1372,21 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Materiais de Construção
+  // Event listeners para Materiais de Construção (ATUALIZADO)
   document
     .querySelectorAll(
-      "#alvenaria, #postes, #portao, #estacas, #materiaisDiversos, #parcelamentoCustosAdicionais"
+      "#alvenaria, #formasBase, #arame, #blocos, #parafusos, #portao, #estacas, #materiaisDiversos, #parcelamentoCustosAdicionais"
     )
+    .forEach((input) => {
+      input.addEventListener("change", function () {
+        calcularCustosAdicionais();
+        calcularProjecao();
+      });
+    });
+
+  // Event listeners para Materiais Elétricos (NOVO)
+  document
+    .querySelectorAll("#postes, #cabeamento, #eletricoDiversos")
     .forEach((input) => {
       input.addEventListener("change", function () {
         calcularCustosAdicionais();

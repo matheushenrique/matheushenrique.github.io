@@ -790,7 +790,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 4: Financiamento do Terreno (MOVIDO PARA ANTES DA MÃO DE OBRA CIVIL) -->
+                <!-- Grupo 4: Financiamento do Terreno -->
                 <div class="config-group">
                     <h3>🏞️ Financiamento do Terreno</h3>
                     <div class="input-row">
@@ -819,24 +819,24 @@
                     </div>
                 </div>
 
-                <!-- Grupo 5: Mão de Obra Civil (ANTIGO GRUPO 4) -->
+                <!-- Grupo 5: Mão de Obra Civil (ATUALIZADO) -->
                 <div class="config-group">
                     <h3>🏗️ Mão de Obra Civil</h3>
                     <div class="input-row">
-                        <label>Construção casinha (R$):</label>
-                        <input type="number" id="construcao" value="10000" step="100" min="0" max="100000">
+                        <label>Construção (R$):</label>
+                        <input type="number" id="construcao" value="9500" step="100" min="0" max="100000">
+                    </div>
+                    <div class="input-row">
+                        <label>Fabricação de Blocos (R$):</label>
+                        <input type="number" id="fabricacaoBlocos" value="3000" step="100" min="0" max="50000">
                     </div>
                     <div class="input-row">
                         <label>Preparação do Terreno (R$):</label>
                         <input type="number" id="preparacaoTerreno" value="0" step="100" min="0" max="50000">
                     </div>
                     <div class="input-row">
-                        <label>Cercamento (R$):</label>
-                        <input type="number" id="cercamento" value="4700" step="100" min="0" max="100000">
-                    </div>
-                    <div class="input-row">
                         <label>Subtotal Mão de Obra Civil:</label>
-                        <div class="readonly-field" id="subtotalMaoObraCivil">R$ 14.700,00</div>
+                        <div class="readonly-field" id="subtotalMaoObraCivil">R$ 12.500,00</div>
                     </div>
                 </div>
 
@@ -861,16 +861,28 @@
                     </div>
                 </div>
 
-                <!-- Grupo 7: Materiais de Construção -->
+                <!-- Grupo 7: Materiais de Construção (ATUALIZADO) -->
                 <div class="config-group">
                     <h3>🧱 Materiais de Construção</h3>
                     <div class="input-row">
                         <label>Alvenaria (R$):</label>
-                        <input type="number" id="alvenaria" value="4000" step="100" min="0" max="50000">
+                        <input type="number" id="alvenaria" value="10343" step="100" min="0" max="50000">
                     </div>
                     <div class="input-row">
-                        <label>Postes e Estruturas (R$):</label>
-                        <input type="number" id="postes" value="1730" step="100" min="0" max="30000">
+                        <label>Formas Base (R$):</label>
+                        <input type="number" id="formasBase" value="1000" step="100" min="0" max="10000">
+                    </div>
+                    <div class="input-row">
+                        <label>Arame (R$):</label>
+                        <input type="number" id="arame" value="816" step="10" min="0" max="5000">
+                    </div>
+                    <div class="input-row">
+                        <label>Blocos (R$):</label>
+                        <input type="number" id="blocos" value="5440" step="100" min="0" max="30000">
+                    </div>
+                    <div class="input-row">
+                        <label>Parafusos (R$):</label>
+                        <input type="number" id="parafusos" value="1695" step="10" min="0" max="10000">
                     </div>
                     <div class="input-row">
                         <label>Portão (R$):</label>
@@ -886,7 +898,28 @@
                     </div>
                     <div class="input-row">
                         <label>Subtotal Materiais:</label>
-                        <div class="readonly-field" id="subtotalMateriais">R$ 9.570,00</div>
+                        <div class="readonly-field" id="subtotalMateriais">R$ 22.134,00</div>
+                    </div>
+                </div>
+
+                <!-- Novo Grupo: Materiais Elétricos -->
+                <div class="config-group">
+                    <h3>🔌 Materiais Elétricos</h3>
+                    <div class="input-row">
+                        <label>Postes (R$):</label>
+                        <input type="number" id="postes" value="1200" step="100" min="0" max="10000">
+                    </div>
+                    <div class="input-row">
+                        <label>Cabeamento (R$):</label>
+                        <input type="number" id="cabeamento" value="5000" step="100" min="0" max="30000">
+                    </div>
+                    <div class="input-row">
+                        <label>Elétrico Diversos (R$):</label>
+                        <input type="number" id="eletricoDiversos" value="10000" step="100" min="0" max="50000">
+                    </div>
+                    <div class="input-row">
+                        <label>Subtotal Materiais Elétricos:</label>
+                        <div class="readonly-field" id="subtotalMateriaisEletricos">R$ 16.200,00</div>
                     </div>
                 </div>
 
@@ -895,7 +928,7 @@
                     <h3>📋 Resumo dos Custos Adicionais</h3>
                     <div class="input-row">
                         <label>Total Mão de Obra Civil:</label>
-                        <div class="readonly-field" id="resumoMaoObraCivil">R$ 14.700,00</div>
+                        <div class="readonly-field" id="resumoMaoObraCivil">R$ 12.500,00</div>
                     </div>
                     <div class="input-row">
                         <label>Total Mão de Obra Elétrica:</label>
@@ -903,12 +936,16 @@
                     </div>
                     <div class="input-row">
                         <label>Total Materiais:</label>
-                        <div class="readonly-field" id="resumoMateriais">R$ 9.570,00</div>
+                        <div class="readonly-field" id="resumoMateriais">R$ 22.134,00</div>
+                    </div>
+                    <div class="input-row">
+                        <label>Total Materiais Elétricos:</label>
+                        <div class="readonly-field" id="resumoMateriaisEletricos">R$ 16.200,00</div>
                     </div>
                     <div class="input-row" style="border-top: 2px solid #3498db; margin-top: 10px; padding-top: 10px;">
                         <label style="font-weight: bold;">Total dos Custos Adicionais:</label>
                         <div class="readonly-field" style="font-weight: bold; color: #2c3e50;" id="valorTotalSistema">R$
-                            33.790,00</div>
+                            60.354,00</div>
                     </div>
                     <div class="input-row">
                         <label>Parcelamento (vezes):</label>
@@ -916,7 +953,7 @@
                     </div>
                     <div class="input-row">
                         <label>Valor da Parcela (R$):</label>
-                        <div class="readonly-field" id="parcelaMensalCustosAdicionais">R$ 3.379,00</div>
+                        <div class="readonly-field" id="parcelaMensalCustosAdicionais">R$ 6.035,40</div>
                     </div>
                 </div>
 
@@ -978,7 +1015,7 @@
                     </div>
                     <div class="input-row">
                         <label>Água (R$):</label>
-                        <input type="number" id="agua" value="50" step="5" min="0" max="500">
+                        <input type="number" id="agua" value="0" step="5" min="0" max="500">
                     </div>
                     <div class="input-row">
                         <label>Contadora (R$):</label>
