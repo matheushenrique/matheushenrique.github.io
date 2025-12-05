@@ -68,19 +68,16 @@ class ProjetoUsinaSolar {
         document.getElementById("materiaisDiversos").value
       ),
 
-      // Materiais Elétricos (NOVO)
+      // Materiais Elétricos (ATUALIZADO - com campo padrão)
       postes: parseFloat(document.getElementById("postes").value),
+      padrao: parseFloat(document.getElementById("padrao").value),
       cabeamento: parseFloat(document.getElementById("cabeamento").value),
       eletricoDiversos: parseFloat(
         document.getElementById("eletricoDiversos").value
       ),
     };
 
-    // Parcelamento dos custos adicionais
-    this.parcelamentoCustosAdicionais =
-      parseInt(document.getElementById("parcelamentoCustosAdicionais").value) ||
-      1;
-
+    // Custos adicionais são pagos à vista (sem parcelamento)
     this.valorTotalCustosAdicionais = this.calcularCustosAdicionais();
 
     // Configurações de pagamento do sistema
@@ -161,7 +158,20 @@ class ProjetoUsinaSolar {
     this.mesesCarenciaTerreno =
       parseInt(document.getElementById("carenciaTerreno").value) || 0;
 
-    // Custos iniciais
+    // Empréstimo BB (NOVO)
+    this.valorFinanciadoBB = parseFloat(
+      document.getElementById("valorFinanciadoBB").value
+    );
+    this.quantidadeParcelasBB = parseInt(
+      document.getElementById("quantidadeParcelasBB").value
+    );
+    this.valorTaxaBB = parseFloat(document.getElementById("valorTaxaBB").value) / 100;
+    this.valorMensalBB = parseFloat(
+      document.getElementById("valorMensalBB").value
+    );
+    this.valorTotalPagoBB = this.quantidadeParcelasBB * this.valorMensalBB;
+
+    // Custos iniciais (ATUALIZADO - sem parcelamento, com instalação internet)
     this.investimentoInicial = {
       projeto: parseFloat(document.getElementById("projeto").value),
       refletores: parseFloat(document.getElementById("refletores").value),
@@ -170,13 +180,12 @@ class ProjetoUsinaSolar {
       instalacaoHidraulica: parseFloat(
         document.getElementById("instalacaoHidraulica").value
       ),
+      instalacaoInternet: parseFloat(
+        document.getElementById("instalacaoInternet").value
+      ),
     };
 
-    // Parcelamento dos custos iniciais
-    this.parcelamentoCustosIniciais =
-      parseInt(document.getElementById("parcelamentoCustosIniciais").value) ||
-      1;
-
+    // Custos iniciais são pagos à vista (sem parcelamento)
     this.valorTotalCustosIniciais = this.calcularCustosIniciais();
 
     // Custos mensais
@@ -257,13 +266,15 @@ class ProjetoUsinaSolar {
     document.getElementById("resumoMateriais").textContent =
       this.formatarMoeda(subtotalMateriais);
 
-    // Calcular subtotal Materiais Elétricos (NOVO)
+    // Calcular subtotal Materiais Elétricos (ATUALIZADO)
     const postes = parseFloat(document.getElementById("postes").value) || 0;
+    const padrao = parseFloat(document.getElementById("padrao").value) || 0;
     const cabeamento =
       parseFloat(document.getElementById("cabeamento").value) || 0;
     const eletricoDiversos =
       parseFloat(document.getElementById("eletricoDiversos").value) || 0;
-    const subtotalMateriaisEletricos = postes + cabeamento + eletricoDiversos;
+    const subtotalMateriaisEletricos =
+      postes + padrao + cabeamento + eletricoDiversos;
 
     document.getElementById("subtotalMateriaisEletricos").textContent =
       this.formatarMoeda(subtotalMateriaisEletricos);
@@ -290,14 +301,6 @@ class ProjetoUsinaSolar {
     document.getElementById("valorTotalSistema").textContent =
       this.formatarMoeda(subtotais.total);
 
-    // Calcular e atualizar a parcela mensal
-    const parcelamento =
-      parseInt(document.getElementById("parcelamentoCustosAdicionais").value) ||
-      1;
-    const parcelaMensal = subtotais.total / parcelamento;
-    document.getElementById("parcelaMensalCustosAdicionais").textContent =
-      this.formatarMoeda(parcelaMensal);
-
     return subtotais.total;
   }
 
@@ -313,6 +316,7 @@ class ProjetoUsinaSolar {
     total += this.valorTotalCustosIniciais;
     total += this.valorTotalCustosAdicionais;
     total += this.valorFinanciamento;
+    total += this.valorFinanciadoBB; // Adicionar empréstimo BB
     if (!this.financiarTerreno) {
       total += this.valorTerreno;
     }
@@ -324,7 +328,8 @@ class ProjetoUsinaSolar {
       this.valorFinanciamento +
       this.valorTotalCustosAdicionais +
       this.valorTotalCustosIniciais +
-      this.valorTerreno;
+      this.valorTerreno +
+      this.valorFinanciadoBB; // Adicionar empréstimo BB
     return total;
   }
 
@@ -379,13 +384,18 @@ class ProjetoUsinaSolar {
       this.valorTotalCustosIniciais
     );
 
-    const parcelaMensalCustosIniciaisElement = document.getElementById(
-      "parcelaMensalCustosIniciais"
+    // Atualizar valor total pago pelo BB
+    const valorTotalPagoBBElement = document.getElementById("valorTotalPagoBB");
+    this.valorTotalPagoBB = this.quantidadeParcelasBB * this.valorMensalBB;
+    valorTotalPagoBBElement.textContent = this.formatarMoeda(
+      this.valorTotalPagoBB
     );
-    const parcelaMensal =
-      this.valorTotalCustosIniciais / this.parcelamentoCustosIniciais;
-    parcelaMensalCustosIniciaisElement.textContent =
-      this.formatarMoeda(parcelaMensal);
+
+    // Atualizar parcela do BB no card
+    const parcelaBBResumoElement = document.getElementById("parcelaBBResumo");
+    parcelaBBResumoElement.textContent = this.formatarMoeda(
+      this.valorMensalBB
+    );
 
     // Atualizar parcela do terreno no card
     const parcelaTerrenoElement = document.getElementById("parcelaTerreno");
@@ -405,21 +415,21 @@ class ProjetoUsinaSolar {
       this.metodoPagamento === "cartao" ? this.mesesAntesProducao : 0;
     const mesInicioProducao = 1;
 
-    // Calcular parcelas dos custos adicionais e iniciais
-    const valorParcelaCustosAdicionais =
-      this.valorTotalCustosAdicionais / this.parcelamentoCustosAdicionais;
-    const valorParcelaCustosIniciais =
-      this.valorTotalCustosIniciais / this.parcelamentoCustosIniciais;
+    // Custos adicionais são pagos à vista no primeiro mês de pré-produção
+    const valorTotalCustosAdicionais = this.valorTotalCustosAdicionais;
 
-    // Determinar o mês de início das parcelas dos custos iniciais e adicionais
-    let mesInicioCustosIniciais = 1 - mesesAnterioresProducao;
-    let mesInicioCustosAdicionais = 1 - mesesAnterioresProducao;
+    // Custos iniciais são pagos à vista no primeiro mês de pré-produção
+    const valorTotalCustosIniciais = this.valorTotalCustosIniciais;
+
+    // Empréstimo BB - parcelas começam no mês 1
+    const mesInicioBB = 1;
+    const mesFimBB = mesInicioBB + this.quantidadeParcelasBB - 1;
 
     // CORREÇÃO: Calcular início das parcelas do terreno para coincidir com custos iniciais
-    let mesInicioParcelasTerreno = mesInicioCustosIniciais;
+    let mesInicioParcelasTerreno = 1 - mesesAnterioresProducao;
     if (this.financiarTerreno && this.entradaTerreno > 0) {
       // Se há entrada, as parcelas começam uma linha após os custos iniciais
-      mesInicioParcelasTerreno = mesInicioCustosIniciais + 1;
+      mesInicioParcelasTerreno = 1 - mesesAnterioresProducao + 1;
     }
 
     // Aplicar carência do terreno
@@ -491,22 +501,16 @@ class ProjetoUsinaSolar {
         }
       }
 
-      // Parcelas dos custos adicionais (começam durante o período de pré-produção)
+      // Custos adicionais são pagos integralmente no primeiro mês de pré-produção
       let parcelaCustosAdicionais = 0;
-      if (
-        mes >= mesInicioCustosAdicionais &&
-        mes < mesInicioCustosAdicionais + this.parcelamentoCustosAdicionais
-      ) {
-        parcelaCustosAdicionais = valorParcelaCustosAdicionais;
+      if (mes === 1 - mesesAnterioresProducao) {
+        parcelaCustosAdicionais = valorTotalCustosAdicionais;
       }
 
-      // Parcelas dos custos iniciais (começam durante o período de pré-produção)
+      // Custos iniciais são pagos integralmente no primeiro mês de pré-produção
       let parcelaCustosIniciais = 0;
-      if (
-        mes >= mesInicioCustosIniciais &&
-        mes < mesInicioCustosIniciais + this.parcelamentoCustosIniciais
-      ) {
-        parcelaCustosIniciais = valorParcelaCustosIniciais;
+      if (mes === 1 - mesesAnterioresProducao) {
+        parcelaCustosIniciais = valorTotalCustosIniciais;
       }
 
       // CORREÇÃO: Parcela do terreno - entrada na primeira linha, parcelas alinhadas com custos iniciais
@@ -525,6 +529,12 @@ class ProjetoUsinaSolar {
         }
       }
 
+      // Parcela do BB
+      let parcelaBB = 0;
+      if (mes >= mesInicioBB && mes <= mesFimBB) {
+        parcelaBB = this.valorMensalBB;
+      }
+
       // Rendimento bruto
       const rendimentoBruto =
         receitaBrutaMensal -
@@ -533,7 +543,8 @@ class ProjetoUsinaSolar {
         parcelaSistema -
         parcelaCustosAdicionais -
         parcelaCustosIniciais -
-        parcelaTerreno;
+        parcelaTerreno -
+        parcelaBB;
 
       // Lucro líquido
       const lucroLiquido = rendimentoBruto - imposto;
@@ -598,6 +609,11 @@ class ProjetoUsinaSolar {
         }
       }
 
+      // Status para empréstimo BB
+      if (mes >= mesInicioBB && mes <= mesFimBB) {
+        status += ' <span class="status-dot status-carecia"></span>Parcela BB';
+      }
+
       this.dadosMensais.push({
         mes,
         ano,
@@ -610,6 +626,7 @@ class ProjetoUsinaSolar {
         parcelaCustosAdicionais,
         parcelaSistema,
         parcelaTerreno,
+        parcelaBB,
         rendimentoBruto,
         imposto,
         lucroLiquido,
@@ -632,6 +649,7 @@ class ProjetoUsinaSolar {
     const investimentoTotalElement =
       document.getElementById("investimentoTotal");
     const cardCartaoElement = document.getElementById("cardCartao");
+    const parcelaBBResumoElement = document.getElementById("parcelaBBResumo");
 
     investimentoTotalElement.textContent = this.formatarMoeda(
       this.investimentoTotal
@@ -668,6 +686,9 @@ class ProjetoUsinaSolar {
         this.valorParcelaTerreno
       );
     }
+
+    // Parcela do BB
+    parcelaBBResumoElement.textContent = this.formatarMoeda(this.valorMensalBB);
 
     // Mostrar/ocultar card do cartão
     if (this.metodoPagamento === "cartao") {
@@ -739,6 +760,9 @@ class ProjetoUsinaSolar {
                 <td class="${
                   dado.parcelaTerreno > 0 ? "negative" : "neutral"
                 }">${this.formatarMoeda(dado.parcelaTerreno)}</td>
+                <td class="${dado.parcelaBB > 0 ? "negative" : "neutral"}">${
+        this.formatarMoeda(dado.parcelaBB)
+      }</td>
                 <td class="${
                   dado.rendimentoBruto >= 0 ? "positive" : "negative"
                 }">${this.formatarMoeda(dado.rendimentoBruto)}</td>
@@ -933,6 +957,7 @@ class ProjetoUsinaSolar {
       (sum, d) => sum + d.parcelaTerreno,
       0
     );
+    const parcelasBB = ultimoAno.reduce((sum, d) => sum + d.parcelaBB, 0);
     const impostos = ultimoAno.reduce((sum, d) => sum + d.imposto, 0);
     const lucro = ultimoAno.reduce((sum, d) => sum + d.lucroLiquido, 0);
 
@@ -945,6 +970,7 @@ class ProjetoUsinaSolar {
           "Custos Fixos",
           "Parcelas Sistema",
           "Parcelas Terreno",
+          "Parcelas BB",
           "Impostos",
           "Lucro Líquido",
         ],
@@ -956,6 +982,7 @@ class ProjetoUsinaSolar {
               custosFixos,
               parcelasSistema,
               parcelasTerreno,
+              parcelasBB,
               impostos,
               lucro,
             ],
@@ -965,6 +992,7 @@ class ProjetoUsinaSolar {
               "#e67e22",
               "#9b59b6",
               "#d35400",
+              "#3498db",
               "#f39c12",
               "#2ecc71",
             ],
@@ -1071,6 +1099,21 @@ function calcularValorTerreno() {
   calcularProjecao();
 }
 
+function calcularValorTotalBB() {
+  const quantidadeParcelas =
+    parseInt(document.getElementById("quantidadeParcelasBB").value) || 0;
+  const valorMensal =
+    parseFloat(document.getElementById("valorMensalBB").value) || 0;
+  const valorTotal = quantidadeParcelas * valorMensal;
+
+  // Atualizar o campo de valor total pago
+  document.getElementById("valorTotalPagoBB").textContent =
+    projeto.formatarMoeda(valorTotal);
+
+  // Recalcular projeção
+  calcularProjecao();
+}
+
 function mudarPagina(direcao) {
   const totalPaginas = Math.ceil(
     projeto.dadosMensais.length / projeto.itensPorPagina
@@ -1113,36 +1156,35 @@ function resetarValores() {
     document.getElementById("numeroParcelasSistema").value = "60";
     document.getElementById("valorParcelaSistema").value = "3493.08";
     document.getElementById("parcelasCartao").value = "18";
-    document.getElementById("numeroParticipantes").value = "5";
-    document.getElementById("valorPorParticipante").value = "818.39";
+    document.getElementById("numeroParticipantes").value = "6";
+    document.getElementById("valorPorParticipante").value = "836.25";
     document.getElementById("mesesAntesProducao").value = "3";
 
     // Resetar Mão de Obra Civil (ATUALIZADO)
-    document.getElementById("construcao").value = "9500";
+    document.getElementById("construcao").value = "9000";
     document.getElementById("fabricacaoBlocos").value = "3000";
     document.getElementById("preparacaoTerreno").value = "0";
 
     // Resetar Mão de Obra Elétrica
     document.getElementById("instalacaoPaineis").value = "9520";
-    document.getElementById("instalacaoPadrao").value = "0";
+    document.getElementById("instalacaoPadrao").value = "120";
     document.getElementById("instalacaoMesa").value = "0";
 
     // Resetar Materiais de Construção (ATUALIZADO)
-    document.getElementById("alvenaria").value = "10343";
+    document.getElementById("alvenaria").value = "9530";
     document.getElementById("formasBase").value = "1000";
     document.getElementById("arame").value = "816";
     document.getElementById("blocos").value = "5440";
     document.getElementById("parafusos").value = "1695";
     document.getElementById("portao").value = "2000";
-    document.getElementById("estacas").value = "840";
+    document.getElementById("estacas").value = "1140";
     document.getElementById("materiaisDiversos").value = "1000";
 
-    // Resetar Materiais Elétricos (NOVO)
+    // Resetar Materiais Elétricos (ATUALIZADO)
     document.getElementById("postes").value = "1200";
+    document.getElementById("padrao").value = "501.75";
     document.getElementById("cabeamento").value = "5000";
     document.getElementById("eletricoDiversos").value = "10000";
-
-    document.getElementById("parcelamentoCustosAdicionais").value = "10";
 
     // Resetar financiamento do terreno
     document.getElementById("entradaTerreno").value = "0";
@@ -1150,16 +1192,22 @@ function resetarValores() {
     document.getElementById("numeroParcelasTerreno").value = "120";
     document.getElementById("valorParcelaTerreno").value = "450";
 
-    // Resetar custos iniciais
+    // Resetar Empréstimo BB (NOVO)
+    document.getElementById("valorFinanciadoBB").value = "18063.30";
+    document.getElementById("quantidadeParcelasBB").value = "26";
+    document.getElementById("valorTaxaBB").value = "1.9";
+    document.getElementById("valorMensalBB").value = "900";
+
+    // Resetar custos iniciais (ATUALIZADO - sem parcelamento, com instalação internet)
     document.getElementById("projeto").value = "280";
     document.getElementById("refletores").value = "200";
     document.getElementById("cameras").value = "800";
     document.getElementById("irrigacao").value = "0";
     document.getElementById("instalacaoHidraulica").value = "450";
-    document.getElementById("parcelamentoCustosIniciais").value = "10";
+    document.getElementById("instalacaoInternet").value = "90";
 
-    // Resetar custos mensais (ATUALIZADO - Água = 0)
-    document.getElementById("internet").value = "100";
+    // Resetar custos mensais (ATUALIZADO)
+    document.getElementById("internet").value = "90";
     document.getElementById("taxaIluminacao").value = "100";
     document.getElementById("monitoramento").value = "100";
     document.getElementById("seguro").value = "150";
@@ -1193,6 +1241,7 @@ function exportarExcel() {
       "Custos Adicionais (R$)": dado.parcelaCustosAdicionais,
       "Parcela Sistema (R$)": dado.parcelaSistema,
       "Parcela Terreno (R$)": dado.parcelaTerreno,
+      "Parcela BB (R$)": dado.parcelaBB,
       "Rendimento Bruto (R$)": dado.rendimentoBruto,
       "Imposto (R$)": dado.imposto,
       "Lucro Líquido (R$)": dado.lucroLiquido,
@@ -1272,6 +1321,16 @@ function exportarPDF() {
       );
     }
 
+    // Adicionar informações do empréstimo BB
+    yPos += 7;
+    doc.text(
+      `Parcela BB: ${
+        document.getElementById("parcelaBBResumo").textContent
+      }`,
+      20,
+      yPos
+    );
+
     // Adicionar gráficos (simplificado)
     yPos += 15;
     doc.setFontSize(12);
@@ -1339,10 +1398,24 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("carenciaTerreno")
     .addEventListener("change", calcularProjecao);
 
+  // Configurar eventos para Empréstimo BB
+  document
+    .getElementById("valorFinanciadoBB")
+    .addEventListener("change", calcularProjecao);
+  document
+    .getElementById("quantidadeParcelasBB")
+    .addEventListener("change", calcularValorTotalBB);
+  document
+    .getElementById("valorTaxaBB")
+    .addEventListener("change", calcularProjecao);
+  document
+    .getElementById("valorMensalBB")
+    .addEventListener("change", calcularValorTotalBB);
+
   // Configurar eventos para custos iniciais
   document
     .querySelectorAll(
-      "#projeto, #refletores, #cameras, #irrigacao, #instalacaoHidraulica, #parcelamentoCustosIniciais"
+      "#projeto, #refletores, #cameras, #irrigacao, #instalacaoHidraulica, #instalacaoInternet"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
@@ -1375,7 +1448,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Event listeners para Materiais de Construção (ATUALIZADO)
   document
     .querySelectorAll(
-      "#alvenaria, #formasBase, #arame, #blocos, #parafusos, #portao, #estacas, #materiaisDiversos, #parcelamentoCustosAdicionais"
+      "#alvenaria, #formasBase, #arame, #blocos, #parafusos, #portao, #estacas, #materiaisDiversos"
     )
     .forEach((input) => {
       input.addEventListener("change", function () {
@@ -1384,9 +1457,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-  // Event listeners para Materiais Elétricos (NOVO)
+  // Event listeners para Materiais Elétricos (ATUALIZADO)
   document
-    .querySelectorAll("#postes, #cabeamento, #eletricoDiversos")
+    .querySelectorAll("#postes, #padrao, #cabeamento, #eletricoDiversos")
     .forEach((input) => {
       input.addEventListener("change", function () {
         calcularCustosAdicionais();
