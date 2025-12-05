@@ -165,7 +165,8 @@ class ProjetoUsinaSolar {
     this.quantidadeParcelasBB = parseInt(
       document.getElementById("quantidadeParcelasBB").value
     );
-    this.valorTaxaBB = parseFloat(document.getElementById("valorTaxaBB").value) / 100;
+    this.valorTaxaBB =
+      parseFloat(document.getElementById("valorTaxaBB").value) / 100;
     this.valorMensalBB = parseFloat(
       document.getElementById("valorMensalBB").value
     );
@@ -393,9 +394,7 @@ class ProjetoUsinaSolar {
 
     // Atualizar parcela do BB no card
     const parcelaBBResumoElement = document.getElementById("parcelaBBResumo");
-    parcelaBBResumoElement.textContent = this.formatarMoeda(
-      this.valorMensalBB
-    );
+    parcelaBBResumoElement.textContent = this.formatarMoeda(this.valorMensalBB);
 
     // Atualizar parcela do terreno no card
     const parcelaTerrenoElement = document.getElementById("parcelaTerreno");
@@ -760,9 +759,9 @@ class ProjetoUsinaSolar {
                 <td class="${
                   dado.parcelaTerreno > 0 ? "negative" : "neutral"
                 }">${this.formatarMoeda(dado.parcelaTerreno)}</td>
-                <td class="${dado.parcelaBB > 0 ? "negative" : "neutral"}">${
-        this.formatarMoeda(dado.parcelaBB)
-      }</td>
+                <td class="${
+                  dado.parcelaBB > 0 ? "negative" : "neutral"
+                }">${this.formatarMoeda(dado.parcelaBB)}</td>
                 <td class="${
                   dado.rendimentoBruto >= 0 ? "positive" : "negative"
                 }">${this.formatarMoeda(dado.rendimentoBruto)}</td>
@@ -1324,9 +1323,7 @@ function exportarPDF() {
     // Adicionar informações do empréstimo BB
     yPos += 7;
     doc.text(
-      `Parcela BB: ${
-        document.getElementById("parcelaBBResumo").textContent
-      }`,
+      `Parcela BB: ${document.getElementById("parcelaBBResumo").textContent}`,
       20,
       yPos
     );
