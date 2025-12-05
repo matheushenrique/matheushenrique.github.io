@@ -191,7 +191,7 @@
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         }
 
-        .card h3 {
+        .card.h3 {
             font-size: 0.85em;
             margin-bottom: 8px;
             opacity: 0.9;
@@ -397,30 +397,36 @@
 
         th:nth-child(12),
         td:nth-child(12) {
-            min-width: 100px;
-            max-width: 120px;
+            min-width: 120px;
+            max-width: 155px;
         }
 
         th:nth-child(13),
         td:nth-child(13) {
-            min-width: 120px;
-            max-width: 140px;
-        }
-
-        th:nth-child(14),
-        td:nth-child(14) {
             min-width: 100px;
             max-width: 120px;
         }
 
+        th:nth-child(14),
+        td:nth-child(14) {
+            min-width: 120px;
+            max-width: 140px;
+        }
+
         th:nth-child(15),
         td:nth-child(15) {
-            min-width: 140px;
-            max-width: 160px;
+            min-width: 100px;
+            max-width: 120px;
         }
 
         th:nth-child(16),
         td:nth-child(16) {
+            min-width: 140px;
+            max-width: 160px;
+        }
+
+        th:nth-child(17),
+        td:nth-child(17) {
             min-width: 180px;
             max-width: 220px;
             text-align: left;
@@ -823,7 +829,28 @@
                     </div>
                 </div>
 
-                <!-- Grupo 5: Mão de Obra Civil (ATUALIZADO) -->
+                <!-- Grupo 5: Custos Cartão (NOVO) -->
+                <div class="config-group">
+                    <h3>💳 Custos Cartão</h3>
+                    <div class="config-subgroup">
+                        <h4>🏗️ Civil</h4>
+                        <div class="input-row">
+                            <label>Quantidade de Parcelas:</label>
+                            <input type="number" id="parcelasCartaoCivil" value="18" step="1" min="1" max="24">
+                        </div>
+                        <div class="input-row">
+                            <label>Valor Mensal (R$):</label>
+                            <input type="number" id="valorMensalCartaoCivil" value="709.94" step="0.01" min="0"
+                                max="5000">
+                        </div>
+                        <div class="input-row">
+                            <label>Valor Total (R$):</label>
+                            <div class="readonly-field" id="valorTotalCartaoCivil">R$ 12.778,92</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo 6: Mão de Obra Civil (ATUALIZADO) -->
                 <div class="config-group">
                     <h3>🏗️ Mão de Obra Civil</h3>
                     <div class="input-row">
@@ -844,7 +871,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 6: Mão de Obra Elétrica -->
+                <!-- Grupo 7: Mão de Obra Elétrica -->
                 <div class="config-group">
                     <h3>⚡ Mão de Obra Elétrica</h3>
                     <div class="input-row">
@@ -865,7 +892,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 7: Materiais de Construção (ATUALIZADO) -->
+                <!-- Grupo 8: Materiais de Construção (ATUALIZADO) -->
                 <div class="config-group">
                     <h3>🧱 Materiais de Construção</h3>
                     <div class="input-row">
@@ -906,7 +933,7 @@
                     </div>
                 </div>
 
-                <!-- Novo Grupo: Materiais Elétricos -->
+                <!-- Grupo 9: Materiais Elétricos -->
                 <div class="config-group">
                     <h3>🔌 Materiais Elétricos</h3>
                     <div class="input-row">
@@ -931,7 +958,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 8: Resumo dos Custos Adicionais (SEM PARCELAMENTO) -->
+                <!-- Grupo 10: Resumo dos Custos Adicionais (SEM PARCELAMENTO) -->
                 <div class="config-group">
                     <h3>📋 Resumo dos Custos Adicionais</h3>
                     <div class="input-row">
@@ -957,7 +984,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 9: Empréstimo BB (NOVO) -->
+                <!-- Grupo 11: Empréstimo BB (NOVO) -->
                 <div class="config-group">
                     <h3>🏦 Empréstimo BB</h3>
                     <div class="input-row">
@@ -982,7 +1009,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 10: Custos Iniciais (ATUALIZADO - sem parcelamento, com instalação internet) -->
+                <!-- Grupo 12: Custos Iniciais (ATUALIZADO - sem parcelamento, com instalação internet) -->
                 <div class="config-group">
                     <h3>🏗️ Custos Iniciais</h3>
                     <div class="input-row">
@@ -1015,7 +1042,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo 11: Custos Mensais -->
+                <!-- Grupo 13: Custos Mensais -->
                 <div class="config-group">
                     <h3>📅 Custos Mensais</h3>
                     <div class="input-row">
@@ -1050,7 +1077,7 @@
             <div class="card investimento">
                 <h3>💰 Investimento Total</h3>
                 <div class="value" id="investimentoTotal">R$ 0,00</div>
-                <div class="subtitle">Financiamento + Custos Adicionais + Iniciais + Terreno + BB</div>
+                <div class="subtitle">BB + Sistema + Terreno + Cartão</div>
             </div>
             <div class="card">
                 <h3>⏱️ Payback</h3>
@@ -1131,6 +1158,7 @@
                             <th>Parcela Sistema (R$)</th>
                             <th>Parcela Terreno (R$)</th>
                             <th>Parcela BB (R$)</th>
+                            <th>Parcela Cartão Civil (R$)</th>
                             <th>Rend. Bruto (R$)</th>
                             <th>Imposto (R$)</th>
                             <th>Lucro Líq. (R$)</th>

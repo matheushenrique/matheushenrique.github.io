@@ -158,6 +158,16 @@ class ProjetoUsinaSolar {
     this.mesesCarenciaTerreno =
       parseInt(document.getElementById("carenciaTerreno").value) || 0;
 
+    // Custos Cartão (NOVO)
+    this.parcelasCartaoCivil = parseInt(
+      document.getElementById("parcelasCartaoCivil").value
+    );
+    this.valorMensalCartaoCivil = parseFloat(
+      document.getElementById("valorMensalCartaoCivil").value
+    );
+    this.valorTotalCartaoCivil =
+      this.parcelasCartaoCivil * this.valorMensalCartaoCivil;
+
     // Empréstimo BB (NOVO)
     this.valorFinanciadoBB = parseFloat(
       document.getElementById("valorFinanciadoBB").value
@@ -201,7 +211,6 @@ class ProjetoUsinaSolar {
       contadora: parseFloat(document.getElementById("contadora").value),
     };
 
-    this.totalInvestimento = this.calcularTotalInvestimento();
     this.totalCustosMensaisBase = this.calcularTotalCustosMensaisBase();
     this.investimentoTotal = this.calcularInvestimentoTotal();
 
@@ -312,25 +321,22 @@ class ProjetoUsinaSolar {
     );
   }
 
-  calcularTotalInvestimento() {
-    let total = 0;
-    total += this.valorTotalCustosIniciais;
-    total += this.valorTotalCustosAdicionais;
-    total += this.valorFinanciamento;
-    total += this.valorFinanciadoBB; // Adicionar empréstimo BB
-    if (!this.financiarTerreno) {
-      total += this.valorTerreno;
-    }
-    return total;
-  }
-
   calcularInvestimentoTotal() {
-    let total =
-      this.valorFinanciamento +
-      this.valorTotalCustosAdicionais +
-      this.valorTotalCustosIniciais +
-      this.valorTerreno +
-      this.valorFinanciadoBB; // Adicionar empréstimo BB
+    // Agora considera apenas: Empréstimo BB + Financiamento do sistema + Financiamento do terreno + Custos Cartão
+    let total = 0;
+
+    // Empréstimo BB
+    total += this.valorFinanciadoBB;
+
+    // Financiamento do sistema
+    total += this.valorFinanciamento;
+
+    // Financiamento do terreno
+    total += this.valorTerreno;
+
+    // Custos Cartão (Civil)
+    total += this.valorTotalCartaoCivil;
+
     return total;
   }
 
@@ -392,6 +398,16 @@ class ProjetoUsinaSolar {
       this.valorTotalPagoBB
     );
 
+    // Atualizar valor total do Cartão Civil
+    const valorTotalCartaoCivilElement = document.getElementById(
+      "valorTotalCartaoCivil"
+    );
+    this.valorTotalCartaoCivil =
+      this.parcelasCartaoCivil * this.valorMensalCartaoCivil;
+    valorTotalCartaoCivilElement.textContent = this.formatarMoeda(
+      this.valorTotalCartaoCivil
+    );
+
     // Atualizar parcela do BB no card
     const parcelaBBResumoElement = document.getElementById("parcelaBBResumo");
     parcelaBBResumoElement.textContent = this.formatarMoeda(this.valorMensalBB);
@@ -423,6 +439,11 @@ class ProjetoUsinaSolar {
     // Empréstimo BB - parcelas começam no mês 1
     const mesInicioBB = 1;
     const mesFimBB = mesInicioBB + this.quantidadeParcelasBB - 1;
+
+    // Custos Cartão Civil - parcelas começam no período de pré-produção
+    const mesInicioCartaoCivil = 1 - mesesAnterioresProducao;
+    const mesFimCartaoCivil =
+      mesInicioCartaoCivil + this.parcelasCartaoCivil - 1;
 
     // CORREÇÃO: Calcular início das parcelas do terreno para coincidir com custos iniciais
     let mesInicioParcelasTerreno = 1 - mesesAnterioresProducao;
@@ -534,6 +555,12 @@ class ProjetoUsinaSolar {
         parcelaBB = this.valorMensalBB;
       }
 
+      // Parcela do Cartão Civil
+      let parcelaCartaoCivil = 0;
+      if (mes >= mesInicioCartaoCivil && mes <= mesFimCartaoCivil) {
+        parcelaCartaoCivil = this.valorMensalCartaoCivil;
+      }
+
       // Rendimento bruto
       const rendimentoBruto =
         receitaBrutaMensal -
@@ -543,7 +570,8 @@ class ProjetoUsinaSolar {
         parcelaCustosAdicionais -
         parcelaCustosIniciais -
         parcelaTerreno -
-        parcelaBB;
+        parcelaBB -
+        parcelaCartaoCivil;
 
       // Lucro líquido
       const lucroLiquido = rendimentoBruto - imposto;
@@ -613,6 +641,12 @@ class ProjetoUsinaSolar {
         status += ' <span class="status-dot status-carecia"></span>Parcela BB';
       }
 
+      // Status para Cartão Civil
+      if (mes >= mesInicioCartaoCivil && mes <= mesFimCartaoCivil) {
+        status +=
+          ' <span class="status-dot status-parcela"></span>Cartão Civil';
+      }
+
       this.dadosMensais.push({
         mes,
         ano,
@@ -626,6 +660,7 @@ class ProjetoUsinaSolar {
         parcelaSistema,
         parcelaTerreno,
         parcelaBB,
+        parcelaCartaoCivil,
         rendimentoBruto,
         imposto,
         lucroLiquido,
@@ -762,6 +797,9 @@ class ProjetoUsinaSolar {
                 <td class="${
                   dado.parcelaBB > 0 ? "negative" : "neutral"
                 }">${this.formatarMoeda(dado.parcelaBB)}</td>
+                <td class="${
+                  dado.parcelaCartaoCivil > 0 ? "negative" : "neutral"
+                }">${this.formatarMoeda(dado.parcelaCartaoCivil)}</td>
                 <td class="${
                   dado.rendimentoBruto >= 0 ? "positive" : "negative"
                 }">${this.formatarMoeda(dado.rendimentoBruto)}</td>
@@ -957,6 +995,10 @@ class ProjetoUsinaSolar {
       0
     );
     const parcelasBB = ultimoAno.reduce((sum, d) => sum + d.parcelaBB, 0);
+    const parcelasCartaoCivil = ultimoAno.reduce(
+      (sum, d) => sum + d.parcelaCartaoCivil,
+      0
+    );
     const impostos = ultimoAno.reduce((sum, d) => sum + d.imposto, 0);
     const lucro = ultimoAno.reduce((sum, d) => sum + d.lucroLiquido, 0);
 
@@ -970,6 +1012,7 @@ class ProjetoUsinaSolar {
           "Parcelas Sistema",
           "Parcelas Terreno",
           "Parcelas BB",
+          "Parcelas Cartão Civil",
           "Impostos",
           "Lucro Líquido",
         ],
@@ -982,6 +1025,7 @@ class ProjetoUsinaSolar {
               parcelasSistema,
               parcelasTerreno,
               parcelasBB,
+              parcelasCartaoCivil,
               impostos,
               lucro,
             ],
@@ -992,6 +1036,7 @@ class ProjetoUsinaSolar {
               "#9b59b6",
               "#d35400",
               "#3498db",
+              "#9b59b6",
               "#f39c12",
               "#2ecc71",
             ],
@@ -1098,6 +1143,21 @@ function calcularValorTerreno() {
   calcularProjecao();
 }
 
+function calcularValorCartaoCivil() {
+  const parcelas =
+    parseInt(document.getElementById("parcelasCartaoCivil").value) || 0;
+  const valorMensal =
+    parseFloat(document.getElementById("valorMensalCartaoCivil").value) || 0;
+  const valorTotal = parcelas * valorMensal;
+
+  // Atualizar o campo de valor total
+  document.getElementById("valorTotalCartaoCivil").textContent =
+    projeto.formatarMoeda(valorTotal);
+
+  // Recalcular projeção
+  calcularProjecao();
+}
+
 function calcularValorTotalBB() {
   const quantidadeParcelas =
     parseInt(document.getElementById("quantidadeParcelasBB").value) || 0;
@@ -1185,6 +1245,10 @@ function resetarValores() {
     document.getElementById("cabeamento").value = "5000";
     document.getElementById("eletricoDiversos").value = "10000";
 
+    // Resetar Custos Cartão (NOVO)
+    document.getElementById("parcelasCartaoCivil").value = "18";
+    document.getElementById("valorMensalCartaoCivil").value = "709.94";
+
     // Resetar financiamento do terreno
     document.getElementById("entradaTerreno").value = "0";
     document.getElementById("carenciaTerreno").value = "0";
@@ -1241,6 +1305,7 @@ function exportarExcel() {
       "Parcela Sistema (R$)": dado.parcelaSistema,
       "Parcela Terreno (R$)": dado.parcelaTerreno,
       "Parcela BB (R$)": dado.parcelaBB,
+      "Parcela Cartão Civil (R$)": dado.parcelaCartaoCivil,
       "Rendimento Bruto (R$)": dado.rendimentoBruto,
       "Imposto (R$)": dado.imposto,
       "Lucro Líquido (R$)": dado.lucroLiquido,
@@ -1328,6 +1393,14 @@ function exportarPDF() {
       yPos
     );
 
+    // Adicionar informações do Cartão Civil
+    yPos += 7;
+    doc.text(
+      `Parcela Cartão Civil: R$ ${projeto.valorMensalCartaoCivil.toFixed(2)}`,
+      20,
+      yPos
+    );
+
     // Adicionar gráficos (simplificado)
     yPos += 15;
     doc.setFontSize(12);
@@ -1394,6 +1467,14 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("carenciaTerreno")
     .addEventListener("change", calcularProjecao);
+
+  // Configurar eventos para Custos Cartão
+  document
+    .getElementById("parcelasCartaoCivil")
+    .addEventListener("change", calcularValorCartaoCivil);
+  document
+    .getElementById("valorMensalCartaoCivil")
+    .addEventListener("change", calcularValorCartaoCivil);
 
   // Configurar eventos para Empréstimo BB
   document
