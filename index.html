@@ -1,24 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matheus Henrique · Full Stack Engineer</title>
 <meta name="description" content="Matheus Henrique — Full Stack Engineer with 9+ years building production web, back-end and mobile applications. React, Node.js, Cloud and AI tooling.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1115;
-    --panel:#161a21;
-    --panel-2:#1b2028;
-    --text:#e7e9ee;
-    --muted:#9aa3b2;
-    --dim:#6b7280;
-    --line:#272d38;
-    --accent:#e8a13a;
-    --accent-2:#5aa9e6;
-    --chip:#1f2530;
-    --chip-border:#313a48;
-    --max:1080px;
+    --bg:#0b0b14;
+    --bg-2:#11111e;
+    --surface:rgba(255,255,255,.04);
+    --surface-solid:#15151f;
+    --border:rgba(255,255,255,.09);
+    --border-strong:rgba(255,255,255,.16);
+    --text:#f2f2f7;
+    --muted:#a5a5c0;
+    --dim:#6f6f8d;
+    --violet:#8b5cf6;
+    --indigo:#6366f1;
+    --cyan:#22d3ee;
+    --pink:#ec4899;
+    --grad:linear-gradient(120deg,#8b5cf6 0%,#6366f1 45%,#22d3ee 100%);
+    --glow:rgba(139,92,246,.45);
+    --chip-bg:rgba(255,255,255,.05);
+    --shadow:0 20px 60px -20px rgba(0,0,0,.7);
+    --max:1120px;
+  }
+  html[data-theme="light"]{
+    --bg:#f6f6fb;
+    --bg-2:#ececf5;
+    --surface:rgba(255,255,255,.7);
+    --surface-solid:#ffffff;
+    --border:rgba(20,20,40,.1);
+    --border-strong:rgba(20,20,40,.18);
+    --text:#16161f;
+    --muted:#4f4f68;
+    --dim:#8585a0;
+    --glow:rgba(139,92,246,.25);
+    --chip-bg:rgba(99,102,241,.07);
+    --shadow:0 20px 50px -24px rgba(60,40,120,.35);
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -26,139 +49,195 @@
     margin:0;
     background:var(--bg);
     color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    line-height:1.6;
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;
+    line-height:1.65;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
-  a{color:var(--accent-2);text-decoration:none;}
-  a:hover{text-decoration:underline;}
+  /* ambient gradient mesh */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(40% 50% at 12% 8%,rgba(139,92,246,.22),transparent 70%),
+      radial-gradient(45% 45% at 92% 12%,rgba(34,211,238,.16),transparent 70%),
+      radial-gradient(50% 50% at 75% 95%,rgba(236,72,153,.12),transparent 70%),
+      linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+  }
+  a{color:inherit;text-decoration:none;}
   .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
 
-  header{
-    border-bottom:1px solid var(--line);
-    padding:56px 0 40px;
-    background:linear-gradient(180deg,#12151b 0%,var(--bg) 100%);
+  /* nav */
+  nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:color-mix(in srgb,var(--bg) 70%,transparent);
+    border-bottom:1px solid var(--border);
   }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px;}
+  .brand{font-family:"Sora";font-weight:700;font-size:16px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--grad);box-shadow:0 0 14px var(--glow);}
+  .nav-links{display:flex;gap:26px;font-size:14px;color:var(--muted);}
+  .nav-links a{transition:color .2s;}
+  .nav-links a:hover{color:var(--text);}
+  .toggle{
+    width:38px;height:38px;border-radius:11px;border:1px solid var(--border-strong);
+    background:var(--surface);color:var(--text);cursor:pointer;font-size:16px;
+    display:grid;place-items:center;transition:transform .25s,border-color .2s;
+  }
+  .toggle:hover{transform:rotate(20deg) scale(1.05);border-color:var(--violet);}
+  @media(max-width:640px){.nav-links{display:none;}}
+
+  /* hero */
+  header{padding:80px 0 56px;position:relative;}
   .eyebrow{
-    color:var(--accent);
-    letter-spacing:.28em;
-    text-transform:uppercase;
-    font-size:11px;
-    font-weight:600;
-    margin-bottom:14px;
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:"JetBrains Mono";font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);padding:6px 14px;border:1px solid var(--border);border-radius:100px;
+    background:var(--surface);margin-bottom:26px;
   }
+  .eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 0 var(--cyan);animation:pulse 2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,211,238,.6);}70%{box-shadow:0 0 0 9px rgba(34,211,238,0);}100%{box-shadow:0 0 0 0 rgba(34,211,238,0);}}
   .name{
-    font-family:Georgia,"Times New Roman",serif;
-    font-size:clamp(40px,7vw,68px);
-    line-height:1.02;
-    margin:0 0 14px;
-    font-weight:400;
-  }
-  .name em{color:var(--accent);font-style:italic;}
-  .tagline{color:var(--muted);font-size:15px;margin-bottom:22px;}
-  .contact{
-    display:flex;flex-wrap:wrap;gap:8px 22px;
-    font-size:13.5px;color:var(--muted);
-  }
-  .contact a{color:var(--muted);}
-  .contact a:hover{color:var(--accent-2);}
-
-  .grid{
-    display:grid;
-    grid-template-columns:1fr 320px;
-    gap:48px;
-    padding:48px 0 64px;
-  }
-  @media(max-width:820px){
-    .grid{grid-template-columns:1fr;gap:8px;}
-  }
-
-  section{margin-bottom:42px;}
-  h2{
-    font-family:Georgia,serif;
-    font-weight:400;
-    font-size:24px;
+    font-family:"Sora";font-weight:700;
+    font-size:clamp(46px,9vw,92px);line-height:.98;letter-spacing:-.03em;
     margin:0 0 22px;
-    display:flex;align-items:center;gap:16px;
   }
-  h2::after{content:"";flex:1;height:1px;background:var(--line);}
+  .name span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .tagline{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:640px;margin:0 0 30px;}
+  .tagline b{color:var(--text);font-weight:600;}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:13px;
+    font-weight:600;font-size:14.5px;transition:transform .2s,box-shadow .25s,border-color .2s;
+  }
+  .btn-primary{background:var(--grad);color:#fff;box-shadow:0 12px 32px -10px var(--glow);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 40px -10px var(--glow);}
+  .btn-ghost{border:1px solid var(--border-strong);background:var(--surface);color:var(--text);}
+  .btn-ghost:hover{transform:translateY(-2px);border-color:var(--violet);}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:13.5px;color:var(--dim);font-family:"JetBrains Mono";}
+  .hero-meta a:hover{color:var(--cyan);}
 
-  .lede{color:var(--muted);font-size:15.5px;border-left:3px solid var(--accent);padding-left:18px;}
+  /* stats strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 0;}
+  @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr);}}
+  .stat{border:1px solid var(--border);background:var(--surface);border-radius:16px;padding:18px;}
+  .stat .num{font-family:"Sora";font-weight:700;font-size:26px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .stat .lbl{font-size:12px;color:var(--muted);margin-top:7px;}
 
-  .job{position:relative;padding-left:22px;margin-bottom:30px;}
-  .job::before{
-    content:"";position:absolute;left:0;top:7px;
-    width:9px;height:9px;border-radius:50%;background:var(--accent);
+  /* layout */
+  .grid{display:grid;grid-template-columns:1fr 340px;gap:30px;padding:36px 0 80px;}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:22px;
+    padding:30px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    box-shadow:var(--shadow);margin-bottom:24px;
   }
-  .job::after{
-    content:"";position:absolute;left:4px;top:20px;bottom:-30px;
-    width:1px;background:var(--line);
+  .section-head{display:flex;align-items:center;gap:13px;margin-bottom:26px;}
+  .section-head .ico{
+    width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(34,211,238,.18));
+    border:1px solid var(--border-strong);font-size:18px;
   }
+  h2{font-family:"Sora";font-weight:600;font-size:21px;margin:0;letter-spacing:-.01em;}
+
+  .lede{color:var(--muted);font-size:16px;margin:0;}
+  .lede b{color:var(--text);}
+
+  /* experience timeline */
+  .job{position:relative;padding-left:28px;padding-bottom:30px;}
+  .job:last-child{padding-bottom:0;}
+  .job::before{content:"";position:absolute;left:0;top:5px;width:13px;height:13px;border-radius:50%;background:var(--grad);box-shadow:0 0 0 4px color-mix(in srgb,var(--violet) 18%,transparent);}
+  .job::after{content:"";position:absolute;left:6px;top:20px;bottom:-4px;width:1.5px;background:linear-gradient(var(--border-strong),transparent);}
   .job:last-child::after{display:none;}
-  .job-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;}
-  .role{font-weight:600;font-size:16px;}
-  .period{color:var(--dim);font-size:13px;font-variant-numeric:tabular-nums;}
-  .org{color:var(--accent-2);font-size:13.5px;margin-bottom:8px;}
-  .job ul{margin:6px 0 0;padding:0;list-style:none;}
-  .job li{position:relative;padding-left:18px;color:var(--muted);font-size:14.5px;margin-bottom:7px;}
-  .job li::before{content:"→";position:absolute;left:0;color:var(--accent);}
+  .job-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;}
+  .role{font-family:"Sora";font-weight:600;font-size:16.5px;}
+  .period{font-family:"JetBrains Mono";color:var(--dim);font-size:12.5px;}
+  .org{color:var(--violet);font-weight:600;font-size:13.5px;margin-bottom:10px;}
+  html[data-theme="light"] .org{color:var(--indigo);}
+  .job ul{margin:0;padding:0;list-style:none;}
+  .job li{position:relative;padding-left:20px;color:var(--muted);font-size:14.5px;margin-bottom:8px;}
+  .job li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:2px;background:var(--cyan);}
 
-  .edu{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;padding:14px 0;border-bottom:1px solid var(--line);}
-  .edu:last-child{border-bottom:none;}
-  .edu .deg{font-weight:600;font-size:15px;}
-  .edu .inst{color:var(--accent-2);font-size:13px;}
+  /* education */
+  .edu{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:16px 0;border-bottom:1px solid var(--border);}
+  .edu:last-child{border:none;padding-bottom:0;}
+  .edu:first-child{padding-top:0;}
+  .edu .deg{font-family:"Sora";font-weight:600;font-size:15px;}
+  .edu .inst{color:var(--muted);font-size:13px;}
+  .edu .period{align-self:center;}
 
-  aside .card{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:22px;
-    margin-bottom:22px;
-  }
-  aside h3{
-    font-family:Georgia,serif;font-weight:400;font-size:18px;margin:0 0 16px;
-  }
-  .grouplabel{
-    color:var(--dim);letter-spacing:.18em;text-transform:uppercase;
-    font-size:10.5px;font-weight:600;margin:16px 0 9px;
-  }
-  .grouplabel:first-of-type{margin-top:0;}
-  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  /* sidebar chips */
+  .glabel{font-family:"JetBrains Mono";color:var(--dim);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;margin:20px 0 10px;}
+  .glabel:first-of-type{margin-top:0;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
   .chip{
-    background:var(--chip);border:1px solid var(--chip-border);
-    border-radius:6px;padding:4px 10px;font-size:12px;color:var(--text);
-    font-family:"SF Mono",ui-monospace,Menlo,monospace;
+    font-family:"JetBrains Mono";font-size:12px;padding:6px 12px;border-radius:9px;
+    background:var(--chip-bg);border:1px solid var(--border);color:var(--text);
+    transition:transform .18s,border-color .18s,color .18s;cursor:default;
   }
-  .chip.ai{border-color:#2f5168;color:#bfe0f5;}
-  .chip.hl{border-color:#5c4a23;color:var(--accent);}
+  .chip:hover{transform:translateY(-2px);border-color:var(--violet);color:var(--text);}
+  .chip.hl{border-color:color-mix(in srgb,var(--violet) 45%,transparent);background:color-mix(in srgb,var(--violet) 12%,transparent);}
+  .chip.ai{border-color:color-mix(in srgb,var(--cyan) 40%,transparent);background:color-mix(in srgb,var(--cyan) 10%,transparent);}
 
-  .lang{display:flex;justify-content:space-between;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line);}
-  .lang:last-child{border:none;}
-  .lang .lvl{color:var(--dim);font-size:12.5px;}
+  .lang{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:11px 0;border-bottom:1px solid var(--border);}
+  .lang:last-child{border:none;padding-bottom:0;}
+  .lang:first-child{padding-top:0;}
+  .lang .lvl{font-family:"JetBrains Mono";font-size:11.5px;color:var(--dim);}
+  .bar{height:5px;border-radius:4px;background:var(--border);width:90px;overflow:hidden;margin-top:5px;}
+  .bar i{display:block;height:100%;background:var(--grad);border-radius:4px;}
 
-  footer{border-top:1px solid var(--line);padding:22px 0;color:var(--dim);font-size:12.5px;}
-  .footrow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  footer{border-top:1px solid var(--border);padding:30px 0;}
+  .footrow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--dim);font-size:13px;font-family:"JetBrains Mono";}
+
+  /* reveal animation */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}.pulse{animation:none;}}
 
   @media print{
-    body{background:#fff;color:#111;}
-    .chip{color:#111;}
-    header{background:#fff;}
+    body::before{display:none;}nav,.cta,.toggle{display:none;}
+    body{background:#fff;color:#000;}
+    .card{box-shadow:none;border:1px solid #ddd;background:#fff;}
   }
 </style>
 </head>
 <body>
 
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="dot"></span>Matheus Henrique</div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#stack">Stack</a>
+      <a href="#education">Education</a>
+    </div>
+    <button class="toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+  </div>
+</nav>
+
 <header>
   <div class="wrap">
-    <div class="eyebrow">Full Stack Engineer · AI-Augmented Development</div>
-    <h1 class="name">Matheus <em>Henrique</em></h1>
-    <div class="tagline">9+ years · React · Node.js · Mobile · Cloud · AI Tooling</div>
-    <div class="contact">
+    <div class="eyebrow"><span class="pulse"></span>Full Stack Engineer · AI-Augmented Development</div>
+    <h1 class="name">Matheus <span>Henrique</span></h1>
+    <p class="tagline">Full-stack engineer with <b>9+ years</b> building production apps across web, back-end and mobile — now focused on <b>AI-augmented</b> products and real-time voice systems.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="mailto:matheus.henriquepr@gmail.com">✉ Get in touch</a>
+      <a class="btn btn-ghost" href="https://github.com/matheushenrique" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn-ghost" href="https://linkedin.com/in/matheus-henrique" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="hero-meta">
+      <span>📍 Fortaleza, CE — Brazil</span>
       <a href="mailto:matheus.henriquepr@gmail.com">matheus.henriquepr@gmail.com</a>
       <span>+55 (85) 98545-9402</span>
-      <a href="https://linkedin.com/in/matheus-henrique" target="_blank" rel="noopener">linkedin.com/in/matheus-henrique</a>
-      <a href="https://github.com/matheushenrique" target="_blank" rel="noopener">github.com/matheushenrique</a>
-      <span>Fortaleza, CE — Brazil</span>
+    </div>
+
+    <div class="stats reveal">
+      <div class="stat"><div class="num">9+</div><div class="lbl">Years building software</div></div>
+      <div class="stat"><div class="num">4</div><div class="lbl">Languages in production</div></div>
+      <div class="stat"><div class="num">Web · Mobile</div><div class="lbl">Full-stack coverage</div></div>
+      <div class="stat"><div class="num">AI · Voice</div><div class="lbl">Current focus</div></div>
     </div>
   </div>
 </header>
@@ -166,19 +245,16 @@
 <div class="wrap">
   <div class="grid">
     <main>
-      <section>
-        <h2>About</h2>
-        <p class="lede">Full-stack engineer with 9+ years building production applications across web, back-end and mobile. Specialised in scalable Node.js APIs and React ecosystems. Currently focused on AI-augmented development — integrating LLMs (Claude, OpenAI, Gemini) and telephony tools (Twilio) into real-world products including call-centre intelligence, lead management and e-commerce.</p>
+      <section id="about" class="card reveal">
+        <div class="section-head"><span class="ico">✦</span><h2>About</h2></div>
+        <p class="lede">Full-stack engineer with 9+ years building production applications across web, back-end and mobile. Specialised in <b>scalable Node.js APIs and React ecosystems</b>. Currently focused on AI-augmented development — integrating LLMs (Claude, OpenAI, Gemini) and telephony tools (Twilio) into real-world products including <b>call-centre intelligence, lead management and e-commerce</b>.</p>
       </section>
 
-      <section>
-        <h2>Experience</h2>
+      <section id="experience" class="card reveal">
+        <div class="section-head"><span class="ico">💼</span><h2>Experience</h2></div>
 
         <div class="job">
-          <div class="job-head">
-            <span class="role">Software Engineer</span>
-            <span class="period">2022 — Present</span>
-          </div>
+          <div class="job-head"><span class="role">Software Engineer</span><span class="period">2022 — Present</span></div>
           <div class="org">BairesDev · Remote</div>
           <ul>
             <li>Engineer on Red Ventures' voice &amp; telephony platforms (Compass / Aerias), building agent-assist, lead-dialer and call-routing systems for high-volume phone sales operations.</li>
@@ -190,10 +266,7 @@
         </div>
 
         <div class="job">
-          <div class="job-head">
-            <span class="role">Software Engineer</span>
-            <span class="period">2021 — 2022</span>
-          </div>
+          <div class="job-head"><span class="role">Software Engineer</span><span class="period">2021 — 2022</span></div>
           <div class="org">Jobsity · Remote</div>
           <ul>
             <li>Developed and maintained full-stack web applications for US-based clients using React, Node.js and TypeScript.</li>
@@ -202,10 +275,7 @@
         </div>
 
         <div class="job">
-          <div class="job-head">
-            <span class="role">Mobile Developer</span>
-            <span class="period">2020 — 2021</span>
-          </div>
+          <div class="job-head"><span class="role">Mobile Developer</span><span class="period">2020 — 2021</span></div>
           <div class="org">BRQ · Remote</div>
           <ul>
             <li>Built Swift mobile applications integrating Firebase, Google Analytics and third-party SDKs.</li>
@@ -214,10 +284,7 @@
         </div>
 
         <div class="job">
-          <div class="job-head">
-            <span class="role">Developer</span>
-            <span class="period">2016 — 2020</span>
-          </div>
+          <div class="job-head"><span class="role">Developer</span><span class="period">2016 — 2020</span></div>
           <div class="org">NWSoft · Fortaleza</div>
           <ul>
             <li>Planned, developed and deployed RESTful APIs with Node.js and PHP; led AWS migration (Lambda, RDS, SQS, EC2).</li>
@@ -226,82 +293,79 @@
         </div>
       </section>
 
-      <section>
-        <h2>Education</h2>
+      <section id="education" class="card reveal">
+        <div class="section-head"><span class="ico">🎓</span><h2>Education</h2></div>
         <div class="edu">
-          <div>
-            <div class="deg">Bachelor's — Computer Engineering</div>
-            <div class="inst">UFC · Fortaleza</div>
-          </div>
+          <div><div class="deg">Bachelor's — Computer Engineering</div><div class="inst">UFC · Fortaleza</div></div>
           <span class="period">2016 — 2020</span>
         </div>
         <div class="edu">
-          <div>
-            <div class="deg">Exchange Program</div>
-            <div class="inst">Gonzaga University · Spokane, WA</div>
-          </div>
+          <div><div class="deg">Exchange Program</div><div class="inst">Gonzaga University · Spokane, WA</div></div>
           <span class="period">2014 — 2015</span>
         </div>
         <div class="edu">
-          <div>
-            <div class="deg">Bachelor's — Telecommunications Engineering</div>
-            <div class="inst">UFC · Fortaleza</div>
-          </div>
+          <div><div class="deg">Bachelor's — Telecommunications Engineering</div><div class="inst">UFC · Fortaleza</div></div>
           <span class="period">2012 — 2015</span>
         </div>
       </section>
     </main>
 
     <aside>
-      <div class="card">
-        <h3>AI Tools</h3>
-        <div class="grouplabel">LLMs &amp; Assistants</div>
+      <div class="card reveal" id="stack" style="margin-bottom:24px;">
+        <div class="section-head"><span class="ico">🤖</span><h2>AI Tools</h2></div>
+        <div class="glabel">LLMs &amp; Assistants</div>
         <div class="chips">
           <span class="chip ai">Claude</span><span class="chip ai">Claude MCP</span><span class="chip ai">OpenAI</span>
           <span class="chip ai">Gemini</span><span class="chip ai">Antigravity</span><span class="chip ai">GitHub Copilot</span>
         </div>
-        <div class="grouplabel">Platforms &amp; Methods</div>
+        <div class="glabel">Platforms &amp; Methods</div>
         <div class="chips">
           <span class="chip ai">Azure AI</span><span class="chip ai">Prompt Engineering</span><span class="chip ai">LLM Integration</span>
         </div>
-        <div class="grouplabel">Telephony</div>
+        <div class="glabel">Telephony</div>
         <div class="chips">
           <span class="chip ai">Twilio Voice</span><span class="chip ai">Twilio SMS</span><span class="chip ai">Twilio Studio</span><span class="chip ai">Twilio Flex</span>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Tech Stack</h3>
-        <div class="grouplabel">Languages</div>
+      <div class="card reveal">
+        <div class="section-head"><span class="ico">⚙️</span><h2>Tech Stack</h2></div>
+        <div class="glabel">Languages</div>
         <div class="chips">
           <span class="chip hl">TypeScript</span><span class="chip">JavaScript</span><span class="chip">Python</span><span class="chip">Swift</span>
         </div>
-        <div class="grouplabel">Front-end</div>
+        <div class="glabel">Front-end</div>
         <div class="chips">
           <span class="chip hl">React</span><span class="chip">Next.js</span><span class="chip">Vue.js</span><span class="chip">React Native</span><span class="chip">TailwindCSS</span>
         </div>
-        <div class="grouplabel">Back-end</div>
+        <div class="glabel">Back-end</div>
         <div class="chips">
           <span class="chip hl">Node.js</span><span class="chip">NestJS</span><span class="chip">Fastify</span><span class="chip">FastAPI</span><span class="chip">Ts.ED</span><span class="chip">Express</span><span class="chip">REST APIs</span><span class="chip">WebSockets</span>
         </div>
-        <div class="grouplabel">Databases</div>
+        <div class="glabel">Databases</div>
         <div class="chips">
           <span class="chip hl">PostgreSQL</span><span class="chip">MongoDB</span><span class="chip">Redis</span><span class="chip">DynamoDB</span><span class="chip">MySQL</span><span class="chip">Databricks</span><span class="chip">Elasticsearch</span>
         </div>
-        <div class="grouplabel">Cloud &amp; DevOps</div>
+        <div class="glabel">Cloud &amp; DevOps</div>
         <div class="chips">
           <span class="chip hl">AWS</span><span class="chip hl">Terraform</span><span class="chip hl">Docker</span><span class="chip hl">CI/CD</span><span class="chip">GitHub Actions</span><span class="chip">ECS</span><span class="chip">Lambda</span><span class="chip">EventBridge</span><span class="chip">Firebase</span><span class="chip">GCP</span><span class="chip">Nginx</span>
         </div>
-        <div class="grouplabel">Observability &amp; Testing</div>
+        <div class="glabel">Observability &amp; Testing</div>
         <div class="chips">
           <span class="chip">New Relic</span><span class="chip">Grafana</span><span class="chip">Jest</span><span class="chip">Mocha</span>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Languages</h3>
-        <div class="lang"><span>Portuguese</span><span class="lvl">Native</span></div>
-        <div class="lang"><span>English</span><span class="lvl">Professional</span></div>
+      <div class="card reveal">
+        <div class="section-head"><span class="ico">🌐</span><h2>Languages</h2></div>
+        <div class="lang">
+          <div><div>Portuguese</div><div class="bar"><i style="width:100%"></i></div></div>
+          <span class="lvl">Native</span>
+        </div>
+        <div class="lang">
+          <div><div>English</div><div class="bar"><i style="width:85%"></i></div></div>
+          <span class="lvl">Professional</span>
+        </div>
       </div>
     </aside>
   </div>
@@ -309,10 +373,22 @@
 
 <footer>
   <div class="wrap footrow">
-    <span>Matheus Henrique · Full Stack Engineer</span>
+    <span>© 2026 Matheus Henrique · Full Stack Engineer</span>
     <span>Updated April 2026</span>
   </div>
 </footer>
 
+<script>
+  // theme toggle
+  const root=document.documentElement, btn=document.getElementById('themeToggle');
+  btn.addEventListener('click',()=>{
+    root.setAttribute('data-theme', root.getAttribute('data-theme')==='dark'?'light':'dark');
+  });
+  // scroll reveal
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
 </body>
 </html>
