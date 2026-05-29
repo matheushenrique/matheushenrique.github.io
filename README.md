@@ -1,4 +1,3 @@
 # matheushenrique.github.io
-Testing Github Pages
 
-testando
+Personal resume site for Matheus Henrique, published via GitHub Pages.
